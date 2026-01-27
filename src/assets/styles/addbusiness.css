@@ -1,0 +1,210 @@
+.add-business-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+.add-business-content {
+    margin-left: 270px;
+    padding: 2rem;
+    flex: 1;
+}
+
+/* Navbar container */
+.navbar {
+    background-color: #fcfcfc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 6rem;
+    margin-top: -2.5rem;
+    margin-bottom: 20px;
+    width: 100%;
+    margin-right: 6rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-content {
+    max-width: 100%;
+    width: 100%;
+}
+
+
+
+/* Navbar content */
+.navbar-content {
+    max-width: 1000px;
+}
+
+/* Title */
+.navbar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-left: -80px;
+}
+
+/* Subtitle */
+.navbar-subtitle {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    margin-bottom: -5px;
+    margin-left: -80px;
+}
+
+/* Close button */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #000000;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-right: -80px;
+}
+
+.close-btn:hover {
+    color: #53555a;
+}
+
+.form-container {
+    max-width: 1000px;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+input,
+select {
+    background-color: #f9fafb;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    margin-top: 0.5rem;
+}
+
+.form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    color: #111827;
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.form-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    margin-top: 0.5rem;
+    color: #111827;
+}
+
+.footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.cancel-btn,
+.submit-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #f9fafb;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+}
+
+.submit-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+}
+
+.submit-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.what-happens-next {
+    background-color: #f1f5f9;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+    max-width: 1000px;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    margin-top: 2rem;
+}
+
+.what-happens-next h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.what-happens-next ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.what-happens-next li {
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+}
+
+.what-happens-next li::before {
+    content: "•";
+    color: #2563eb;
+    margin-right: 10px;
+}
+
+.what-happens-next ul li {
+    padding-left: 1.5rem;
+}

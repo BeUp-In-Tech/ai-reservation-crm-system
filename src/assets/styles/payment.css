@@ -1,0 +1,603 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.payment-page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* Payment Header Styles */
+/* .payment-header {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.payment-header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payment-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.payment-logo-icon {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-globe-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
+}
+
+.payment-logo-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.payment-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.payment-theme-toggle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-theme-toggle:hover {
+  background-color: #f9fafb;
+}
+
+.payment-moon-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #6b7280;
+}
+
+.payment-my-bookings-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.payment-my-bookings-btn:hover {
+  background-color: #1d4ed8;
+} */
+
+/* Main Content */
+.payment-main {
+  padding: 2rem 1rem;
+}
+
+.payment-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .payment-grid {
+    grid-template-columns: 450px 1fr;
+  }
+}
+
+/* Left Column */
+.payment-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Summary Card */
+.summary-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2563eb;
+}
+
+.summary-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Reservation Info */
+.reservation-info {
+  background-color: #eff6ff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.reservation-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  background-color: #2563eb;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reservation-icon {
+  font-size: 1.5rem;
+}
+
+.reservation-details {
+  flex: 1;
+}
+
+.reservation-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.reservation-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Booking Info Grid */
+.booking-info-grid {
+  margin-bottom: 1.5rem;
+}
+
+.booking-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.booking-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.booking-input {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #111827;
+  background-color: white;
+  outline: none;
+}
+
+.booking-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Fee Breakdown */
+.fee-breakdown {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.fee-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.fee-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.fee-amount {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Total Section */
+.total-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.total-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+/* Confirmation Info Card */
+.confirmation-info-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  border: 1px solid #bfdbfe;
+}
+
+.confirmation-info-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #2563eb;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirmation-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.confirmation-info-content {
+  flex: 1;
+}
+
+.confirmation-info-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.375rem;
+}
+
+.confirmation-info-text {
+  font-size: 0.8rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+/* Right Column - Payment */
+.payment-right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.payment-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-card-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2563eb;
+}
+
+.payment-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Express Checkout */
+.express-checkout-section {
+  margin-bottom: 1.5rem;
+}
+
+.express-checkout-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.express-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.apple-pay-btn {
+  background-color: #000000;
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.apple-pay-btn:hover {
+  background-color: #1a1a1a;
+}
+
+.apple-icon {
+  font-size: 1.75rem;
+}
+
+.pay-text {
+  font-size: 1.125rem;
+}
+
+.google-pay-btn {
+  background-color: white;
+  color: #5f6368;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dadce0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.google-pay-btn:hover {
+  background-color: #f8f9fa;
+}
+
+.google-icon {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #4285f4;
+}
+
+.pay-text-google {
+  font-size: 1rem;
+  color: #3c4043;
+}
+
+/* Divider */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.divider-text {
+  position: relative;
+  background-color: white;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Payment Form */
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-input {
+  background-color: white;
+  padding: 0.875rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  color: #111827;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.card-input-wrapper {
+  position: relative;
+}
+
+.card-icon-input {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #9ca3af;
+}
+
+.card-number-input {
+  padding-left: 3rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Security Notice */
+.security-notice {
+  background-color: #f0fdf4;
+  border-radius: 0.5rem;
+  padding: 0.875rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.security-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.security-text {
+  font-size: 0.8rem;
+  color: #047857;
+  line-height: 1.5;
+}
+
+/* Confirm Payment Button */
+.confirm-payment-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.confirm-payment-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-lock-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Terms Text */
+.terms-text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.terms-link {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.terms-link:hover {
+  color: #1d4ed8;
+}
+
+/* Responsive Design */
+@media (max-width: 1023px) {
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-left-column {
+    order: 2;
+  }
+
+  .payment-right-column {
+    order: 1;
+  }
+}

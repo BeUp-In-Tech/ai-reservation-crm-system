@@ -1,0 +1,214 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  overflow-x: hidden;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 2rem;
+  max-width: 100%;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.dashboard-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.date-filter-btn {
+  background-color: #fcfcfc;
+  color: rgb(20, 19, 19);
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 1rem 0;
+}
+
+.stat-change {
+  font-size: 0.875rem;
+  color: #34d399;
+}
+
+.charts-section {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.chart-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  flex: 1 1 45%;
+  /* Makes each chart take 30% of the container width, with flexibility */
+  max-width: 500px;
+}
+
+.chart-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.chart-card canvas {
+  max-width: 100%;
+  /* Ensures charts fit inside the cards */
+  height: auto;
+}
+
+.recent-activity-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.activity-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.activity-row span {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.recent-activity-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.recent-activity-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.activity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.activity-row:last-child {
+  border-bottom: none;
+  /* Removes the border from the last item */
+}
+
+.activity-name {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.status-badge {
+  padding: 0.25rem 1rem;
+  /* Increase the horizontal padding for wider badge */
+  min-width: 100px;
+  /* Ensure the badge has a minimum width */
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  background-color: #e5e7eb;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.status-badge.converted {
+  background-color: #d1fae5;
+  color: #16a34a;
+}
+
+.status-badge.hands-off {
+  background-color: #fef2f2;
+  /* Light red background */
+  color: #ef4444;
+  /* Red text color */
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.activity-row:hover {
+  background-color: #f3f4f6;
+  /* Light background on hover */
+  cursor: pointer;
+  transform: scale(1.02);
+  /* Slightly enlarges the row */
+  transition: all 0.2s ease;
+}
+
+.activity-row:hover .activity-time {
+  color: #2563eb;
+  /* Change time color on hover */
+}
+
+.status-badge.converted {
+  background-color: #d1fae5;
+  color: #16a34a;
+}
+
+.status-badge.hands-off {
+  background-color: #fef2f2;
+  /* Light red background */
+  color: #f74949;
+  /* Red text color */
+}
+
+
+.activity-row span {
+  flex: 1;
+  text-align: left;
+}

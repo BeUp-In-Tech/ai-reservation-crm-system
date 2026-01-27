@@ -1,0 +1,1475 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Hero Section */
+.hero {
+  background-color: #f2f6fa;
+  padding: 0.75rem 0;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin-left: -230px;
+  padding: 0 1rem;
+}
+
+/* Hero Badge (Top-left with gap) */
+.hero-badge {
+  position: absolute;
+  /* Positioned relative to the .hero section */
+  top: 150px;
+  /* Gap from the top */
+  left: 160px;
+  /* Gap from the left */
+  display: inline-block;
+  background-color: #e0e7ff;
+  /* Light blue background */
+  color: #3868c2;
+  /* Blue text */
+  padding: 0.25rem 0.75rem;
+  /* Padding for spacing */
+  border-radius: 0.8rem;
+  /* Rounded corners */
+  font-size: 0.875rem;
+  /* Font size */
+  font-weight: 600;
+  /* Bold text */
+}
+
+/* Remove any margin issues */
+.hero-badge p {
+  margin: 0;
+  /* Remove any margin from paragraph */
+}
+
+
+@media (max-width: 1024px) {
+  .hero-badge {
+    top: 100px;
+    /* Adjust the top position for tablets */
+    left: 120px;
+    /* Adjust the left position for tablets */
+    font-size: 0.8rem;
+    /* Slightly smaller font size */
+    padding: 0.2rem 0.6rem;
+    /* Adjust padding for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-badge {
+    top: 80px;
+    /* Adjust the top position for smaller devices */
+    left: 20px;
+    /* Adjust the left position for smaller devices */
+    font-size: 0.75rem;
+    /* Smaller font size on mobile */
+    padding: 0.2rem 0.5rem;
+    /* Adjust padding for mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-badge {
+    top: 60px;
+    /* Adjust top position for even smaller screens */
+    left: 20px;
+    /* Keep left position consistent */
+    font-size: 0.7rem;
+    /* Further reduce font size on very small screens */
+    padding: 0.2rem 0.5rem;
+    /* Smaller padding */
+  }
+}
+
+/* Hero Grid */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr 1fr;
+    /* 2 columns on larger screens */
+  }
+}
+
+/* Hero Title */
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* Typing Effect Animation */
+/* .typing-container {
+  display: inline-block;
+} */
+
+.typing-effect {
+  display: inline-block;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  border-right: 3px solid #345ce2;
+  white-space: nowrap;
+  margin: 0;
+  letter-spacing: 0.05em;
+  animation:
+    typing 3.5s steps(23, end),
+    blink-caret 0.75s step-end infinite;
+}
+
+/* Typing animation */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+/* Blinking cursor animation */
+@keyframes blink-caret {
+
+  from,
+  to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: #345ce2;
+  }
+}
+
+/* Optional: Remove cursor after typing completes */
+.typing-effect.typing-complete {
+  border-right: none;
+  animation: typing 3.5s steps(23, end);
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  .typing-effect {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .typing-effect {
+    font-size: 1.5rem;
+  }
+}
+
+/* Hero Subtitle */
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #4b5563;
+  margin-bottom: 2rem;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+/* Hero Buttons */
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Button Styles */
+.btn-primary1,
+.btn-secondary1 {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary1 {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+}
+
+.btn-primary1:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-secondary1 {
+  background-color: transparent;
+  border: 2px solid #bcbec4;
+  color: #2a313f;
+  font-weight: bold;
+}
+
+.btn-secondary1:hover {
+  background-color: #f1f5f9;
+}
+
+/* Trusted Text */
+.trusted {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+/* Chat Section */
+.chat-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  margin-left: 80px;
+  margin-right: -250px;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.chat-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: -30px;
+}
+
+.chat-status .online {
+  color: #345ce2;
+  /* White text color for better contrast */
+  font-weight: 600;
+  border-radius: 15px;
+  /* Make it a circle */
+  padding: 0.2rem 1.5rem;
+  /* Adjust padding for the circle */
+  background-color: #dae0f5;
+  /* Set the background color */
+  border: 2px solid #ffffff;
+  /* Border color around the circle */
+  font-size: 0.875rem;
+  /* Slightly smaller font size */
+  display: inline-flex;
+  /* Align text inside the circle */
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-content {
+  padding: 1rem;
+  border-radius: 1rem;
+  /* Removed max-height and overflow to prevent scrolling */
+}
+
+.message {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+
+  /* Animation - Start hidden and slide up */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUpFade 0.6s ease forwards;
+}
+
+/* Staggered animation delays for each message */
+.message:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.message:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.message:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+.message:nth-child(4) {
+  animation-delay: 1.1s;
+}
+
+.message:nth-child(5) {
+  animation-delay: 1.4s;
+}
+
+.message:nth-child(6) {
+  animation-delay: 1.7s;
+}
+
+/* Slide up and fade in animation */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.customer {
+  text-align: left;
+}
+
+.message.customer p {
+  margin: 0;
+  padding: 0.8rem;
+  border-radius: 0.9rem;
+  border-top-left-radius: 0.2rem;
+  background-color: #eaedf0;
+  font-size: 0.875rem;
+  margin-right: 40px;
+  text-align: left;
+
+  /* Smooth transition for hover effect */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect for customer messages */
+.message.customer p:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-info {
+  text-align: left;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+
+  /* Fade in slightly after message */
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+  animation-delay: inherit;
+}
+
+/* Fade in animation for message info */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.message.ai p {
+  margin: 0;
+  padding: 0.8rem;
+  border-radius: 0.9rem;
+  border-top-right-radius: 0.2rem;
+  background-color: #2563eb;
+  font-size: 0.875rem;
+  text-align: right;
+  margin-left: 40px;
+
+  /* Smooth transition for hover effect */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect for AI messages */
+.message.ai p:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.3);
+}
+
+.message-info-ai {
+  text-align: right;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+
+  /* Fade in slightly after message */
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+  animation-delay: inherit;
+}
+
+.typing-indicator {
+  color: #6b7280;
+  font-size: 0.85rem;
+  text-align: right;
+
+  /* Typing indicator animation */
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+  animation-delay: 2s;
+}
+
+/* Optional: Add animated dots for typing indicator */
+.typing-indicator::after {
+  content: '';
+  animation: typingDots 1.5s infinite;
+}
+
+@keyframes typingDots {
+
+  0%,
+  20% {
+    content: '';
+  }
+
+  40% {
+    content: '.';
+  }
+
+  60% {
+    content: '..';
+  }
+
+  80%,
+  100% {
+    content: '...';
+  }
+}
+
+.message-info span,
+.message-info-ai span {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.message-info .time {
+  text-align: left;
+  /* Align time to left for customer */
+}
+
+.message-info-ai .time {
+  text-align: right;
+  /* Align time to right for AI */
+}
+
+.customer p {
+  color: #111827;
+}
+
+.ai p {
+  background-color: #2563eb;
+  color: white;
+}
+
+.customer span,
+.ai span {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+/* Media Queries */
+
+/* For tablets (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .hero-content {
+    margin-left: 0;
+    /* Reset the margin for smaller screens */
+    padding: 0 1rem;
+    /* Add some padding for mobile */
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    /* Stack the content on small screens */
+  }
+
+  .btn-primary1,
+  .btn-secondary1 {
+    width: 100%;
+    /* Make buttons full width */
+    padding: 1rem 0;
+    /* Adjust button padding */
+  }
+
+  .nav-links {
+    flex-direction: column;
+    /* Stack nav links vertically */
+    gap: 1rem;
+    align-items: center;
+    /* Center align navigation links */
+    margin-left: 0;
+  }
+
+  .chat-container {
+    margin-left: 0;
+    /* Reset margins */
+    margin-right: 0;
+  }
+}
+
+/* For mobile devices (max-width: 768px) */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+    /* Adjust font size for mobile */
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+    /* Adjust subtitle for mobile */
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    /* Stack buttons vertically */
+    gap: 1rem;
+  }
+
+  .chat-container {
+    padding: 1.5rem;
+    /* Reduce padding on mobile */
+    margin-left: 0;
+    /* Remove side margins */
+    margin-right: 0;
+  }
+
+  .btn-primary1,
+  .btn-secondary1 {
+    padding: 0.75rem 1.5rem;
+    /* Smaller button padding */
+  }
+
+  .trusted {
+    font-size: 0.875rem;
+    /* Reduce font size for mobile */
+    text-align: center;
+    /* Center the trusted text */
+  }
+
+  .nav-links {
+    flex-direction: column;
+    /* Stack the links */
+    text-align: center;
+    /* Center text for mobile */
+  }
+}
+
+/* Trusted Section */
+.trusted-section {
+  background-color: #ffffff;
+  padding: 3rem 0;
+}
+
+hr {
+  margin-left: -250px;
+  margin-right: -250px;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.trusted-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.trusted-icons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2rem;
+  /* Space between icons */
+  flex-wrap: wrap;
+  /* Allow wrapping on smaller screens */
+}
+
+.icon-item {
+  text-align: center;
+}
+
+.icon {
+  width: 50px;
+  /* Set the size of the icon */
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.icon-item p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 200;
+}
+
+/* Media Queries for smaller screens */
+@media (max-width: 768px) {
+  .trusted-icons {
+    gap: 1rem;
+    /* Reduce gap on smaller screens */
+    flex-direction: column;
+  }
+
+  .icon {
+    width: 40px;
+    /* Resize icons on smaller screens */
+    height: 40px;
+  }
+}
+
+
+/* Features Section */
+.features {
+  background-color: #ebf1f7;
+  padding: 4rem 0;
+}
+
+.h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+    /* Make the cursor disappear */
+  }
+}
+
+
+.section-title1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.section-title1,
+p {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-card {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.5rem;
+  /* Space between icon and text */
+}
+
+.icon-image {
+  width: 2.5rem;
+  /* Adjust the image size */
+  height: 2.5rem;
+  /* Adjust the image size */
+  margin-right: 0.75rem;
+  /* Space between image and icon */
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  color: #2563eb;
+}
+
+.feature-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.feature-text {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.feature-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+  color: #555;
+}
+
+.feature-list li {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.feature-list li:before {
+  content: "✔️";
+  margin-right: 10px;
+  color: #4A90E2;
+  /* Matching the icon color */
+}
+
+/* Benefits Section */
+.benefits {
+  background-color: #111827;
+  color: white;
+  padding: 4rem 0;
+}
+
+.benefits .section-title {
+  text-align: center;
+  color: white;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .benefits-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.benefit-card {
+  text-align: center;
+}
+
+.icon-wrapper-dark {
+  background-color: #2563eb;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.icon-white {
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.benefit-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.benefit-text {
+  color: #d1d5db;
+  line-height: 1.6;
+}
+
+.section-subtitle {
+  font-size: 1.125rem;
+  color: #d1d5db;
+  margin: 1rem 0 2rem 0;
+  font-weight: 200;
+}
+
+/* Booking Status Section */
+.booking-status {
+  padding: 4rem 0;
+  background-color: #f7fafc;
+  /* Light background for the section */
+}
+
+.status-card {
+  max-width: 42rem;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section-titles {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #141414;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.section-subtitles {
+  font-size: 1.125rem;
+  color: #0e0f0f;
+  margin: 1rem 0 2rem 0;
+  font-weight: 200;
+}
+
+.form-fields {
+  width: 100%;
+  /* Full width for the form fields */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* Space between input fields */
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: #fff;
+}
+
+.input-field:focus {
+  border-color: #2563eb;
+  /* Highlight on focus */
+}
+
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  /* Button background color */
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #1d4ed8;
+  /* Darker blue on hover */
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .status-card {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .input-field,
+  .btn-submit {
+    font-size: 0.875rem;
+  }
+}
+
+/* Contact Section */
+.contact {
+  background-color: #f9fafb;
+  padding: 4rem 0;
+}
+
+.section-titles {
+  text-align: center;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  /* More rounded corners */
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  /* Hover effect */
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+.contact-item {
+  display: flex;
+  align-items: left;
+  gap: 1rem;
+}
+
+.contact-icon {
+  background-color: #dbeafe;
+  padding: 0.5rem;
+  /* Increase padding for icons */
+  border-radius: 10%;
+  /* More rounded corners */
+  width: 3rem;
+  /* Increase icon container size */
+  height: 3rem;
+
+  font-size: 1.5rem;
+  /* Increase icon size */
+}
+
+.contact-label {
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+  font-size: 1.125rem;
+  /* Increase font size */
+  text-align: left;
+}
+
+.contact-value {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  /* Add space below the value */
+}
+
+/* Styling for the form */
+.form-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  /* More rounded corners */
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-card:hover {
+  transform: translateY(-5px);
+  /* Hover effect */
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Fields Styling */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  /* Add space between form fields */
+}
+
+.input-field,
+.textarea-field {
+  width: 100%;
+  padding: 1rem;
+  /* More padding for better usability */
+  font-size: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  /* More rounded corners */
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus,
+.textarea-field:focus {
+  border-color: #2563eb;
+  /* Focused border color */
+}
+
+.textarea-field {
+  background-color: #fff;
+  resize: vertical;
+  height: 150px;
+  /* Set a minimum height for the textarea */
+}
+
+.btn-submit {
+  padding: 1rem 2rem;
+  /* Larger padding for the button */
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.75rem;
+  /* More rounded button */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #1d4ed8;
+  /* Darker blue on hover */
+  transform: scale(1.05);
+  /* Slight scale effect on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .input-field,
+  .textarea-field,
+  .btn-submit {
+    font-size: 0.875rem;
+    /* Adjust font size for smaller screens */
+  }
+
+  .contact-label {
+    font-size: 1rem;
+  }
+
+  .contact-value {
+    font-size: 0.875rem;
+  }
+}
+
+
+/* Footer Styling */
+.footer {
+  background-color: #1e293b;
+  /* Dark background for footer */
+  color: white;
+  padding: 3rem 0;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /* 4 columns for larger screens */
+  }
+}
+
+/* Footer Logo Section */
+.footer-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Aligns content to the left */
+  justify-content: flex-start;
+  /* Ensures the content is aligned at the top */
+  gap: 1rem;
+}
+
+/* Logo Styling */
+.footer-logo .logo img {
+  width: 120px;
+  /* Adjust logo size */
+  height: auto;
+  /* Maintain aspect ratio */
+  margin-left: -160px;
+  margin-bottom: 10px;
+}
+
+/* Text inside footer-logo */
+.footer-logo p {
+  text-align: left;
+  /* Align text to the left */
+  margin: 0;
+  /* Remove any default margin */
+  color: #898d94;
+  /* Optional: Adjust text color */
+  font-size: 1rem;
+  /* Optional: Adjust font size */
+  margin-bottom: 10px;
+}
+
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  /* Ensuring icons align left */
+}
+
+.social-icon {
+  color: white;
+  text-decoration: none;
+  font-size: 1.25rem;
+  transition: color 0.3s;
+}
+
+.social-icon:hover {
+  color: #2563eb;
+  /* Hover color for social icons */
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Align the links to the left */
+}
+
+.footer-links h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.footer-links ul {
+  padding: 0;
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: #2563eb;
+  /* Hover color for links */
+}
+
+.newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  /* Align the newsletter section to the left */
+}
+
+.newsletter h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.newsletter p {
+  font-size: 1rem;
+  color: #e5e7eb;
+}
+
+.newsletter-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  margin-right: 1rem;
+}
+
+.newsletter-input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.btn-submit:hover {
+  background-color: #1d4ed8;
+  /* Darker blue on hover */
+}
+
+/* Footer Bottom Section */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.footer-links {
+  text-align: left;
+}
+
+.footer-legal-links a {
+  color: #e5e7eb;
+  text-decoration: none;
+  margin-left: 1rem;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.footer-legal-links a:hover {
+  color: #2563eb;
+}
+
+.footer-bottom p {
+  font-size: 0.875rem;
+  color: #e5e7eb;
+}
+
+.footer-logo {
+  margin-left: -100px;
+  margin-top: -50px;
+}
+
+.footer-logo p {
+  margin-right: 130px;
+  margin-left: -130px;
+  margin-top: -50px
+}
+
+.footer-bottom {
+  margin-left: -180px;
+  margin-right: -180px;
+}
+
+.social-icons {
+  display: flex;
+  flex-direction: row;
+  /* Stack icons and links vertically */
+  gap: 1rem;
+  /* Space between each icon and its link */
+  align-items: flex-start;
+  /* Align icons and text to the left */
+  margin-left: -130px;
+}
+
+.social-icon {
+  color: #e2e7f1;
+  /* Blue color for text links */
+  text-decoration: none;
+  /* Remove underline from links */
+  font-size: 1rem;
+  /* Set font size for links */
+  transition: color 0.3s ease;
+  /* Smooth transition for hover effect */
+}
+
+.social-icon:hover {
+  color: #1d4ed8;
+  /* Darker blue on hover */
+}
+
+.social-icon img {
+  width: 1.5rem;
+  /* Adjust icon size */
+  height: 1.5rem;
+  /* Adjust icon size */
+  object-fit: contain;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  /* Align logo and text vertically in the center */
+  gap: 1rem;
+  /* Space between the logo image and the text */
+}
+
+.logo img {
+  width: 50px;
+  /* Adjust logo image size */
+  height: auto;
+  /* Maintain aspect ratio */
+}
+
+.logo span {
+  font-size: 1.25rem;
+  /* Set font size for the text */
+  font-weight: 600;
+  /* Bold text for company name */
+  color: #ffffff;
+  /* Dark color for the text */
+  margin-left: -30px;
+}
+
+.newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  max-width: 400px;
+  /* Limit the width of the newsletter */
+  margin-left: 100px;
+  /* This will push it to the right side */
+  margin-right: -200px;
+}
+
+.newsletter h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter p {
+  font-size: 1rem;
+  color: #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.newsletter-input {
+  width: 100%;
+  /* Make input take full width */
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  outline: none;
+  margin-bottom: 1rem;
+  /* Space below the input */
+}
+
+.newsletter-input:focus {
+  border-color: #2563eb;
+  /* Focus effect */
+}
+
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #1d4ed8;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-logo {
+    align-items: center;
+    /* Center logo and description on mobile */
+    text-align: center;
+  }
+
+  .footer-links,
+  .newsletter {
+    align-items: center;
+    /* Center the links and newsletter on mobile */
+    text-align: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-legal-links {
+    margin-top: 1rem;
+  }
+}

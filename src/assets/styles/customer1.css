@@ -1,0 +1,597 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
+}
+
+.booking-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Main Content */
+.maincontent {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center; /* Adjusts spacing between items */
+  flex-direction: row; /* Ensures the items are aligned side by side */
+  max-width: 2000px;
+  margin: 0 auto;
+  padding: 1rem 1rem;
+  overflow-x: hidden;
+}
+
+.contentgrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .contentgrid {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+/* Sidebar Styles */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.booking-card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cart-icon {
+  width: 3rem;
+  height: 3rem;
+  background-color: #dbeafe;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cart-icon .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2563eb;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.booking-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.detail-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.progress-section {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1.25rem;
+}
+
+.progress-header {
+  margin-bottom: 0.75rem;
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.05em;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Confirmation Card */
+.confirmation-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  border: 1px solid #bfdbfe;
+}
+
+.confirmation-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #2563eb;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.check-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.confirmation-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.375rem;
+}
+
+.confirmation-text {
+  font-size: 0.8rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Chat Section */
+.chat-section {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 8rem);
+}
+
+@media (max-width: 1023px) {
+  .chat-section {
+    height: 600px;
+  }
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assistant-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.assistant-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-circle {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 50%;
+}
+
+.assistant-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.assistant-status {
+  font-size: 0.75rem;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.status-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.start-call-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.start-call-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.phone-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Chat Messages */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+}
+
+.message-group {
+  margin-bottom: 1.5rem;
+}
+
+.message {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.user-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-message {
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-small {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 50%;
+}
+
+.message-bubble {
+  background-color: white;
+  padding: 0.875rem 1.125rem;
+  border-radius: 1rem;
+  max-width: 85%;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #374151;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.user-bubble {
+  background-color: #2563eb;
+  color: white;
+}
+
+.time-slots-container {
+  margin: 1rem 0 1rem 2.75rem;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+}
+
+.time-slot {
+  padding: 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-slot:hover:not(.disabled) {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.time-slot.selected {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: white;
+  border-width: 2px;
+}
+
+.time-slot.disabled {
+  background-color: #f9fafb;
+  color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirmation-message {
+  margin: 1rem 0 1rem 2.75rem;
+  padding: 1rem;
+  background-color: #f0fdf4;
+  border-radius: 0.5rem;
+  border-left: 3px solid #10b981;
+}
+
+.confirmation-message p {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.confirmation-message strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.action-buttons {
+  margin-left: 2.75rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.confirm-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.confirm-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.change-time-btn {
+  background-color: white;
+  color: #374151;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.change-time-btn:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+/* Chat Input */
+.chat-input-container {
+  border-top: 1px solid #f3f4f6;
+  padding: 1rem 1.5rem;
+  background-color: white;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-action-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.input-action-btn:hover {
+  color: #374151;
+}
+
+.input-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.chat-input-container {
+  max-width: 82%;
+}
+.chat-content-input{
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 200px;
+}
+.chat-messages{
+  background-color: #f9fafb;
+  max-width: 96%;
+  border-radius: 20px;
+}
+
+.chat-input {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: #111827;
+  padding: 0.5rem;
+}
+
+.chat-input-wrapper{
+  margin-left: -23px;
+  max-width: 96%;
+}
+
+.chat-input::placeholder {
+  color: #9ca3af;
+}
+
+.sending-btn {
+  background-color: #2563eb;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  margin-right: -60px;
+}
+
+.sending-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.send-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: white;
+}
+
+.powered-by {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  letter-spacing: 0.05em;
+}

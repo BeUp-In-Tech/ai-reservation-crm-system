@@ -1,0 +1,234 @@
+/* Landing Header */
+.landing-header {
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+.landing-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  /* Adjust padding */
+  width: 100%;
+  max-width: 1700px;
+  /* Limit max width */
+  margin: 0 auto;
+  /* Center the content */
+}
+
+/* Logo */
+.landing-logo-img {
+  height: 40px;
+  width: auto;
+  margin-left: 70px;
+  margin-right: -170px;
+}
+
+.landing-header-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0e0f11;
+  margin-left: -60px;
+  /* Add margin to the left for some spacing */
+}
+
+/* Navigation Links */
+.landing-nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.landing-nav-links a {
+  font-size: 1rem;
+  color: #6f7680;
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.landing-nav-links a:hover {
+  color: #2563eb;
+  /* Change color on hover */
+}
+
+/* Buttons Container */
+.landing-buttons {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.landing-btn-admin {
+  background-color: white;
+  color: rgb(7, 6, 6);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  margin-right: -200px;
+}
+
+.landing-btn-admin:hover {
+  background-color: #f9fafb;
+}
+
+.landing-btn-primary {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-left: -50px;
+  margin-right: 50px;
+}
+
+.landing-btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+
+/* For tablet and smaller devices */
+@media (max-width: 1024px) {
+
+  /* Adjust the landing header content */
+  .landing-header-content {
+    padding: 1.5rem;
+    /* Reduce padding */
+    flex-direction: column;
+    /* Stack logo, nav, and button vertically */
+    align-items: center;
+    /* Center align the content */
+  }
+
+  /* Adjust the logo */
+  .landing-logo-img {
+    margin-left: 0;
+    /* Reset the left margin for the logo */
+    margin-right: 0;
+    /* Reset the right margin */
+  }
+
+  /* Adjust the header title */
+  .landing-header-title {
+    margin-left: 0;
+    /* Remove left margin */
+    text-align: center;
+    /* Center align the title */
+    margin-top: 1rem;
+    /* Add some space above the title */
+  }
+
+  /* Adjust the navigation links */
+  .landing-nav-links {
+    margin-left: 0;
+    /* Reset left margin from nav links */
+    gap: 1rem;
+    /* Reduce the gap between links */
+    margin-top: 1rem;
+    /* Add space above the nav links */
+    text-align: center;
+    /* Center the links */
+  }
+
+  /* Adjust the buttons container */
+  .landing-buttons {
+    flex-direction: column;
+    /* Stack buttons vertically */
+    align-items: center;
+    /* Center the buttons */
+    width: 100%;
+    /* Make sure the buttons take up full width */
+  }
+
+  /* Admin login button adjustments */
+  .landing-btn-admin,
+  .landing-btn-primary {
+    margin-left: 0;
+    /* Reset margins for buttons */
+    margin-top: 1rem;
+    /* Add space above the buttons */
+    width: 100%;
+    /* Make the buttons full width on smaller screens */
+    padding: 1rem 1.5rem;
+    /* Ensure the buttons have enough padding */
+  }
+
+  /* Ensure the primary button adjusts its margins */
+  .landing-btn-primary {
+    margin-right: 0;
+    /* Remove the right margin */
+  }
+}
+
+/* For mobile devices */
+@media (max-width: 768px) {
+
+  /* Adjust header content */
+  .landing-header-content {
+    padding: 1rem;
+    /* Adjust padding for mobile */
+    flex-direction: column;
+    /* Stack content vertically */
+    align-items: center;
+    /* Center all elements */
+  }
+
+  /* Adjust the logo size and margins */
+  .landing-logo-img {
+    margin-left: 0;
+    /* Reset margin */
+    margin-right: 0;
+    /* Reset margin */
+    height: 30px;
+    /* Reduce the logo size */
+  }
+
+  /* Adjust the header title */
+  .landing-header-title {
+    font-size: 1.1rem;
+    /* Adjust font size */
+    text-align: center;
+    /* Center the title */
+    margin-left: 0;
+    /* Remove margin */
+    margin-top: 1rem;
+    /* Add some space above the title */
+  }
+
+  /* Adjust navigation links */
+  .landing-nav-links {
+    display: block;
+    /* Stack the nav links vertically */
+    gap: 1rem;
+    /* Reduce the gap between links */
+    text-align: center;
+    /* Center the links */
+    margin-top: 1rem;
+    /* Add space above the nav links */
+  }
+
+  /* Adjust buttons */
+  .landing-btn-admin,
+  .landing-btn-primary {
+    width: 100%;
+    /* Make buttons full width on small screens */
+    margin-left: 0;
+    /* Reset margins */
+    margin-top: 1rem;
+    /* Add space above the buttons */
+    padding: 1rem 1.5rem;
+    /* Increase padding for buttons */
+  }
+
+  /* Reset margin-right on primary button */
+  .landing-btn-primary {
+    margin-right: 0;
+    /* Remove margin-right */
+  }
+}

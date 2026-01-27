@@ -1,0 +1,173 @@
+/* Sidebar Navigation */
+.sidebar-nav {
+  width: 270px;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-logo {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sidebar-logo-icon {
+  font-size: 1.5rem;
+}
+
+.logo-image {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+.sidebar-logo-text {
+  flex: 1;
+  font-size: 1.5rem;
+}
+
+.sidebar-logo-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.sidebar-logo-subtitle {
+  font-size: 0.65rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.menu-item.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.menu-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.logout-btn:hover {
+  background-color: #fef2f2;
+}
+
+.logout-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.user-profile:hover {
+  background-color: #f9fafb;
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.notification-badge {
+  font-size: 1rem;
+}
+
+/* Responsive Design for Sidebar */
+@media (max-width: 1023px) {
+  .sidebar-nav {
+    width: 70px;
+  }
+
+  .sidebar-logo-text,
+  .menu-item span,
+  .logout-btn span,
+  .user-info {
+    display: none;
+  }
+}
