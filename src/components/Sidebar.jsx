@@ -6,7 +6,8 @@ import {
   Settings,
   TrendingUp,
   LogOut,
-  Sliders
+  Sliders,
+  Briefcase
 } from 'lucide-react';
 import '../assets/styles/sidebar.css';
 import logo from '../assets/logo.png.png';
@@ -15,7 +16,8 @@ import logo from '../assets/logo.png.png';
 const menuRoutes = {
   'Dashboard': '/adminDashboard',
   'Bookings': '/adminBooking',
-  'AI Configuration': '/aiconfigaration',
+  'Manage Business': '/addBusiness',
+  'AI Configuration': '/aiconfiguration',
   'Analytics': '/analytics', // Update this when Analytics page is created
   'Settings': '/settings'   // Update this when Settings page is created
 };
@@ -24,7 +26,8 @@ const menuRoutes = {
 const routeToMenu = {
   '/adminDashboard': 'Dashboard',
   '/adminBooking': 'Bookings',
-  '/aiconfigaration': 'AI Configuration',
+  '/addBusiness': 'Manage Business',
+  '/aiconfiguration': 'AI Configuration',
   '/analytics': 'Analytics',
   '/settings': 'Settings'
 };
@@ -75,6 +78,13 @@ const Sidebar = () => {
         >
           <Calendar className="menu-icon" />
           <span>Bookings</span>
+        </button>
+        <button
+          className={`menu-item ${activeMenu === 'Manage Business' ? 'active' : ''}`}
+          onClick={() => handleMenuClick('Manage Business')}
+        >
+          <Briefcase className="menu-icon" />
+          <span>Manage Business</span>
         </button>
         <button
           className={`menu-item ${activeMenu === 'AI Configuration' ? 'active' : ''}`}

@@ -114,12 +114,12 @@ export default function Bookings() {
             <h1 className="bookings-page-title">Bookings</h1>
             <p className="bookings-page-subtitle">Manage and monitor all incoming appointments.</p>
           </div>
-          <Link to="/addbusiness">
+          {/* <Link to="/addbusiness">
             <button className="bookings-new-business-btn">
               <Plus className="bookings-plus-icon" />
               New Business
             </button>
-          </Link>
+          </Link> */}
         </header>
 
         {/* AI Insight Card */}
@@ -133,7 +133,7 @@ export default function Bookings() {
               Your AI Receptionist handled 85% of bookings today. Typical peak hours starting in 2 hours.
             </p>
           </div>
-          <a href="#" className="bookings-view-analytics">VIEW ANALYTICS</a>
+          <a href="/analytics" className="bookings-view-analytics">VIEW ANALYTICS</a>
         </div>
 
         {/* Stats Cards */}

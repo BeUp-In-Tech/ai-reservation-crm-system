@@ -55,7 +55,7 @@ export default function ReservationCRM() {
 
       {/* Hero Section */}
       <section className="hero">
-        <div className="container hero-grid">
+        <div className="container-hero-grid">
           {/* Hero Section */}
           <div className="hero-content">
             <div className="hero-badge">

@@ -207,6 +207,11 @@ h3 {
   /* Red text color */
 }
 
+@media (max-width: 1023px) {
+    .main-content {
+        margin-left: 50px;
+    }
+}
 
 .activity-row span {
   flex: 1;

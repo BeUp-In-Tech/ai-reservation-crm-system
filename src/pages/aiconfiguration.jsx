@@ -11,12 +11,18 @@ import {
 import '../assets/styles/aiconfigaration.css';
 import Sidebar from '../components/Sidebar';
 
-export default function AIConfigaration() {
+export default function AIConfiguration() {
     const [selectedVoice, setSelectedVoice] = useState('Sophia');
     const [personalityTone, setPersonalityTone] = useState('Restaurant');
     const [confidenceThreshold, setConfidenceThreshold] = useState(70);
     const [behaviorOption, setBehaviorOption] = useState('Transfer to Human');
     const [personalityText, setPersonalityText] = useState('');
+    const [timezone, setTimezone] = useState('Eastern Time (ET)');
+    const [openingTime, setOpeningTime] = useState('09:00');
+    const [closingTime, setClosingTime] = useState('17:00');
+    const [businessType, setBusinessType] = useState('');
+    const [selectedService, setSelectedService] = useState('');
+    const [customServices, setCustomServices] = useState([]);
 
     const [permissions, setPermissions] = useState({
         cancelBookings: true,
@@ -53,14 +59,91 @@ export default function AIConfigaration() {
                         <h1 className="ai-config-page-title">AI Configuration</h1>
                         <p className="ai-config-page-subtitle">Fine-tune your AI assistant's personality and operational boundaries.</p>
                     </div>
-                    <div className="ai-config-header-buttons">
+                    {/* <div className="ai-config-header-buttons">
                         <button className="ai-config-demo-btn">
                             <Play className="ai-config-play-icon" />
                             Live Demo
                         </button>
                         <button className="ai-config-save-btn">Save Changes</button>
-                    </div>
+                    </div> */}
                 </header>
+
+                {/* Service card */}
+                <section className="ai-config-section">
+                    <div className="select-business">
+                        <div className="select-business-content">
+                            <h2 className="select-business-title">Select Business</h2>
+                            <div className="select-business-input">
+                                <select
+                                    value={businessType}
+                                    onChange={(e) => setBusinessType(e.target.value)}
+                                    required
+                                >
+                                    <option value="">Select business type...</option>
+                                    <option value="Health Clinic">Health Clinic</option>
+                                    <option value="Restaurant">Restaurant</option>
+                                    {/* Dynamically add custom services */}
+                                    {customServices.map((service, index) => (
+                                        <option key={index} value={service}>
+                                            {service}
+                                        </option>
+                                    ))}
+                                    {/* <option value="Other">Other (Custom)</option> */}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Select Services */}
+                    <div className="ai-config-select-services">
+                        <div className="select-services-content">
+                            <h2 className="select-services-title">Select Services</h2>
+                            <div className="select-services-input">
+                                <select
+                                    value={selectedService}
+                                    onChange={(e) => setSelectedService(e.target.value)}
+                                    required
+                                >
+                                    <option value="">Select service...</option>
+                                    <option value="Booking">Booking</option>
+                                    <option value="Ordering">Ordering</option>
+                                    {/* <option value="Other">Other (Custom)</option> */}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Business Hours */}
+                    <h2 className="ai-config-section-title">Business Hours</h2>
+                    <div className="form-group">
+                        <label>Timezone *</label>
+                        <select
+                            value={timezone}
+                            onChange={(e) => setTimezone(e.target.value)}
+                            required
+                        >
+                            <option value="Eastern Time (ET)">Eastern Time (ET)</option>
+                            <option value="Central Time (CT)">Central Time (CT)</option>
+                            <option value="Pacific Time (PT)">Pacific Time (PT)</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Opening Time *</label>
+                        <input
+                            type="time"
+                            value={openingTime}
+                            onChange={(e) => setOpeningTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Closing Time *</label>
+                        <input
+                            type="time"
+                            value={closingTime}
+                            onChange={(e) => setClosingTime(e.target.value)}
+                            required
+                        />
+                    </div>
+                </section>
 
                 {/* Select Voice Section */}
                 <section className="ai-config-section">
@@ -92,7 +175,7 @@ export default function AIConfigaration() {
                 </section>
 
                 {/* Personality & Tone Section */}
-                <section className="ai-config-section">
+                {/* <section className="ai-config-section">
                     <h2 className="ai-config-section-title">Personality & Tone</h2>
                     <p className="ai-config-section-subtitle">Define how your AI should communicate</p>
 
@@ -115,10 +198,10 @@ export default function AIConfigaration() {
                         onChange={(e) => setPersonalityText(e.target.value)}
                         rows="4"
                     />
-                </section>
+                </section> */}
 
                 {/* Behavior Settings Section */}
-                <section className="ai-config-section">
+                {/* <section className="ai-config-section">
                     <h2 className="ai-config-section-title">Behavior Settings</h2>
 
                     <div className="behavior-setting">
@@ -154,7 +237,7 @@ export default function AIConfigaration() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* Permissions Section */}
                 <section className="ai-config-section">

@@ -587,6 +587,12 @@ body {
   color: #1d4ed8;
 }
 
+@media (max-width: 1023px) {
+    .payment-content {
+        margin-left: 50px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1023px) {
   .payment-grid {

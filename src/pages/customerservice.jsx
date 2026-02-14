@@ -6,7 +6,7 @@ import Header from '../components/Header.jsx';
 import Robot from '../assets/Rectangle 6.png';
 
 export default function AIReservationCRM() {
-  const [activeTab, setActiveTab] = useState('All Services');
+  const [activeTab, setActiveTab] = useState('All Services'); // Track active tab
   const [searchQuery, setSearchQuery] = useState('');
 
   const tabs = ['All Services', 'Consultation', 'Treatments', 'Emergency', 'Virtual Care'];
@@ -20,7 +20,8 @@ export default function AIReservationCRM() {
       duration: '45 Minutes',
       price: '$85.53',
       location: 'Main Clinic, 3rd floor',
-      badge: 'MOST POPULAR'
+      badge: 'MOST POPULAR',
+      category: 'Consultation'
     },
     {
       id: 2,
@@ -29,7 +30,8 @@ export default function AIReservationCRM() {
       description: 'One-on-one fitness training to help you achieve your health and wellness goals.',
       duration: '60 Minutes',
       price: '$94.55',
-      location: 'East Wing Studio'
+      location: 'East Wing Studio',
+      category: 'Treatments'
     },
     {
       id: 3,
@@ -38,7 +40,8 @@ export default function AIReservationCRM() {
       description: 'Exclusive dining experience with a curated menu crafted by our executive chef.',
       duration: '120 Minutes',
       price: 'Free Reservation',
-      location: 'Main Dining Hall'
+      location: 'Main Dining Hall',
+      category: 'Emergency'  // This could be adjusted as per the category
     },
     {
       id: 4,
@@ -47,7 +50,8 @@ export default function AIReservationCRM() {
       description: 'Connect with healthcare experts right from your home via video consultation.',
       duration: '30 Minutes',
       price: '$42.99',
-      location: 'Remote / Video'
+      location: 'Remote / Video',
+      category: 'Virtual Care'
     },
     {
       id: 5,
@@ -56,14 +60,19 @@ export default function AIReservationCRM() {
       description: 'Therapeutic massage targeting muscle tension and stress relief for ultimate relaxation.',
       duration: '90 Minutes',
       price: '$110.00',
-      location: 'Wellness Suite 1'
+      location: 'Wellness Suite 1',
+      category: 'Consultation'  // Adjust category as needed
     }
   ];
 
+  // Filter services based on the active tab
   const filteredServices = services.filter(service =>
-    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchQuery.toLowerCase())
+    activeTab === 'All Services' || service.category === activeTab
   );
+
+  const handleViewAllBookingsClick = () => {
+    servicesGridRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="ai-reservation-container">
@@ -77,7 +86,6 @@ export default function AIReservationCRM() {
                 <div className="ai-circle-inner">
                   <img src={Robot} alt="AI Robot" />
                 </div>
-
               </div>
             </div>
 
@@ -92,7 +100,10 @@ export default function AIReservationCRM() {
               <p className="hero-description">
                 Fast, automated booking powered by our AI receptionist. Select a service below to get started.
               </p>
-              <button className="view-bookings-btn">
+              <button
+                className="view-bookings-btn"
+                onClick={handleViewAllBookingsClick} // Add click handler here
+              >
                 View All Bookings
                 <span>→</span>
               </button>

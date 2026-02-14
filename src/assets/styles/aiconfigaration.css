@@ -244,25 +244,97 @@ body {
 }
 
 /* Sections */
+/* For AI Config Section */
 .ai-config-section {
     background-color: white;
     border-radius: 0.75rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: #020202;
+    font-size: 1rem;
+    gap: 2rem;
+    /* Gap between the content inside the section */
 }
 
-.ai-config-section-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 0.25rem;
+/* For Select Business Block */
+.select-business {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    /* Add gap between title and input */
 }
 
-.ai-config-section-subtitle {
+/* For Select Services Block */
+.ai-config-select-services {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    /* Add gap between title and input */
+}
+
+/* Add space between form groups */
+/* Add space between form groups */
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
     font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 1.25rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input[type="time"] {
+    width: 100%;
+    padding: 0.875rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #07080c;
+    background-color: white;
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-group input[type="time"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: brightness(0);
+    /* Forces the icon to be black */
+}
+
+/* Select Inputs Styling */
+.select-business-input select,
+.select-services-input select {
+    width: 100%;
+    /* Full width of the container */
+    padding: 0.75rem;
+    font-size: 1rem;
+    color: #020202;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Add some padding to select options */
+.select-business-input select option,
+.select-services-input select option {
+    padding: 1rem;
+}
+
+/* Add additional space below business hours */
+.ai-config-section-title {
+    margin-top: 2rem;
+    /* Add space before title */
 }
 
 /* Voice Grid */
