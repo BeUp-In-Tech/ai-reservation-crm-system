@@ -7,7 +7,7 @@ import business from '../assets/business.png';
 import ai from '../assets/AI.png';
 import notification from '../assets/notification.png';
 import booking from '../assets/booking.png';
-import sms from '../assets/SMS1.png';
+import sms from '../assets/chatting.png';
 import email from '../assets/email.png';
 import whatsappIcon from '../assets/whatsapp.png';
 
@@ -104,7 +104,7 @@ const SettingsPage = () => {
                                 </div>
                             </div>
                             <div className='content-column'>
-                                <div className="input-group">
+                                <div className="input-group1">
                                     <label>Operating Hours</label>
                                     <input
                                         type="text"
@@ -112,7 +112,7 @@ const SettingsPage = () => {
                                         onChange={(e) => setOperatingHours(e.target.value)}
                                     />
                                 </div>
-                                <div className="input-group">
+                                <div className="input-group2">
                                     <label>Time Zone</label>
                                     <select onChange={(e) => setTimezone(e.target.value)} value={timezone}>
                                         <option value="GMT">GMT</option>
@@ -248,7 +248,7 @@ const SettingsPage = () => {
                         </div>
                     </section>
                 </div>
-                <div className="team-permission-card">
+                {/* <div className="team-permission-card">
                     <div className="team-header">
                         <div className="team-header-left">
                             <div className="team-icon-wrapper">
@@ -313,7 +313,7 @@ const SettingsPage = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> */}
             </main>
         </div>
     );

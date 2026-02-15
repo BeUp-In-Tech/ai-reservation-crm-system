@@ -23,6 +23,7 @@ export default function AIConfiguration() {
     const [businessType, setBusinessType] = useState('');
     const [selectedService, setSelectedService] = useState('');
     const [customServices, setCustomServices] = useState([]);
+    const [prompt, setPrompt] = useState('');
 
     const [permissions, setPermissions] = useState({
         cancelBookings: true,
@@ -111,8 +112,22 @@ export default function AIConfiguration() {
                             </div>
                         </div>
                     </div>
+                    {/* Prompt */}
+                    <div className="ai-config-prompt">
+                        <div className="ai-config-prompt-content">
+                            <h2 className="ai-config-prompt-title">Prompt</h2>
+                            <div className="ai-config-prompt-input">
+                                <textarea
+                                    value={prompt}
+                                    onChange={(e) => setPrompt(e.target.value)}
+                                    placeholder="Enter your prompt here..."
+                                    required
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
                     {/* Business Hours */}
-                    <h2 className="ai-config-section-title">Business Hours</h2>
+                    <h2 className="ai-config-section-titleB">Business Hours</h2>
                     <div className="form-group">
                         <label>Timezone *</label>
                         <select
@@ -148,7 +163,7 @@ export default function AIConfiguration() {
                 {/* Select Voice Section */}
                 <section className="ai-config-section">
                     <h2 className="ai-config-section-title">Select Voice</h2>
-                    <p className="ai-config-section-subtitle">Choose the voice for your AI receptionist</p>
+                    {/* <p className="ai-config-section-subtitle">Choose the voice for your AI receptionist</p> */}
 
                     <div className="voice-grid">
                         {voices.map((voice) => (
@@ -242,7 +257,7 @@ export default function AIConfiguration() {
                 {/* Permissions Section */}
                 <section className="ai-config-section">
                     <h2 className="ai-config-section-title">Permissions</h2>
-                    <p className="ai-config-section-subtitle">Control what your AI can do</p>
+                    {/* <p className="ai-config-section-subtitle">Control what your AI can do</p> */}
 
                     <div className="permissions-list">
                         <div className="permission-item">

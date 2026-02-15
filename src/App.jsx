@@ -13,6 +13,7 @@ import AdminLogin from './pages/adminlogin.jsx';
 import Login from './auth/login.jsx';
 import ForgotPassword from './auth/forgotPassword.jsx';
 import OTPEmail from './auth/otp.jsx';
+import Profile from './pages/profile.jsx';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/login" element={<Login />} /> 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp-email" element={<OTPEmail />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

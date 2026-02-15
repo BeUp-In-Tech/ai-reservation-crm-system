@@ -143,7 +143,7 @@ export default function Dashboard() {
                   <div className="td">{activity.hover}</div>
                   <div className="td">{activity.time}</div>
                   <div className="td">
-                    <span className={`status-badge status-${activity.status.toLowerCase()}`}>
+                    <span className={`status-badgess status-${activity.status.toLowerCase()}`}>
                       {activity.status}
                     </span>
                   </div>

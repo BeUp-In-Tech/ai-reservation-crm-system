@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, Clock, DollarSign, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
 import '../assets/styles/customer.css';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,6 @@ export default function AIReservationCRM() {
   const services = [
     {
       id: 1,
-      icon: '🦷',
       title: 'Comprehensive Dental Checkup',
       description: 'Full oral examination including deep cleaning, X-rays and personalized treatment plan.',
       duration: '45 Minutes',
@@ -25,7 +24,6 @@ export default function AIReservationCRM() {
     },
     {
       id: 2,
-      icon: '🏆',
       title: 'Personal Training Session',
       description: 'One-on-one fitness training to help you achieve your health and wellness goals.',
       duration: '60 Minutes',
@@ -35,7 +33,6 @@ export default function AIReservationCRM() {
     },
     {
       id: 3,
-      icon: '🍽️',
       title: "Chef's Table Reservation",
       description: 'Exclusive dining experience with a curated menu crafted by our executive chef.',
       duration: '120 Minutes',
@@ -45,7 +42,6 @@ export default function AIReservationCRM() {
     },
     {
       id: 4,
-      icon: '💻',
       title: 'Virtual Health Consult',
       description: 'Connect with healthcare experts right from your home via video consultation.',
       duration: '30 Minutes',
@@ -55,7 +51,6 @@ export default function AIReservationCRM() {
     },
     {
       id: 5,
-      icon: '💆',
       title: 'Deep Tissue Massage',
       description: 'Therapeutic massage targeting muscle tension and stress relief for ultimate relaxation.',
       duration: '90 Minutes',
@@ -65,10 +60,15 @@ export default function AIReservationCRM() {
     }
   ];
 
-  // Filter services based on the active tab
-  const filteredServices = services.filter(service =>
-    activeTab === 'All Services' || service.category === activeTab
-  );
+  const servicesGridRef = useRef(null);
+
+  // Filter services based on the active tab and search query
+  const filteredServices = services.filter((service) => {
+    const matchesTab = activeTab === 'All Services' || service.category === activeTab;
+    const matchesSearch = service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   const handleViewAllBookingsClick = () => {
     servicesGridRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -104,15 +104,15 @@ export default function AIReservationCRM() {
                 className="view-bookings-btn"
                 onClick={handleViewAllBookingsClick} // Add click handler here
               >
-                View All Bookings
-                <span>→</span>
+                Explore Services
+                <span>↓</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Search Bar */}
-        <div className="search-section">
+        <div className="search-section" ref={servicesGridRef}>
           <div className="search-wrapper">
             <Search className="search-icon" />
             <input
@@ -182,7 +182,7 @@ export default function AIReservationCRM() {
         </div>
 
         {/* Empty State Card */}
-        <div className="empty-state-card">
+        {/* <div className="empty-state-card">
           <div className="empty-state-icon-wrapper">
             <MessageCircle className="empty-state-icon" />
           </div>
@@ -194,10 +194,10 @@ export default function AIReservationCRM() {
             💬 Talk to our AI
           </button>
         </div>
-      </div>
+      </div> */}
 
-      {/* Footer */}
-      <footer className="reservation-footer">
+        {/* Footer */}
+        {/* <footer className="reservation-footer">
         <div className="footer-wrapper">
           <div className="footer-content">
             <p className="footer-text">
@@ -212,7 +212,8 @@ export default function AIReservationCRM() {
             </p>
           </div>
         </div>
-      </footer>
+      </footer> */}
+      </div>
     </div>
   );
 }

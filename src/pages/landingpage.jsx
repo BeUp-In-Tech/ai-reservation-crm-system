@@ -79,7 +79,6 @@ export default function ReservationCRM() {
           <div className="chat-container">
             <div className="chat-header">
               <div className="chat-header-left">
-                <div className="avatar"></div>
                 <img src={Container} alt="container" className="container-icon" />
                 <h2>AI Receptionist</h2>
               </div>

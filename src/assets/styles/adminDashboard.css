@@ -337,7 +337,7 @@ body {
   color: #6b7280;
 }
 
-.status-badge {
+.status-badgess {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -346,7 +346,7 @@ body {
 }
 
 .status-booked {
-  background-color: #dcfce7;
+  background-color: #d1fae5;
   color: #166534;
 }
 

@@ -257,12 +257,30 @@ body {
     /* Gap between the content inside the section */
 }
 
+/* .ai-config-section-subtitle {
+    text-align: left;
+} */
+
+.permission-description {
+    text-align: left;
+    /* Add gap between title and input */
+}
+
 /* For Select Business Block */
 .select-business {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin-bottom: 1rem;
     /* Add gap between title and input */
+}
+
+.select-business-title {
+    margin-bottom: 1rem;
+}
+
+.select-services-title {
+    margin-bottom: 1rem;
 }
 
 /* For Select Services Block */
@@ -276,12 +294,12 @@ body {
 /* Add space between form groups */
 /* Add space between form groups */
 .form-group {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.rem;
     font-size: 0.875rem;
     font-weight: 500;
     color: #374151;
@@ -332,10 +350,69 @@ body {
 }
 
 /* Add additional space below business hours */
-.ai-config-section-title {
-    margin-top: 2rem;
+.ai-config-section-titleB {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
     /* Add space before title */
 }
+
+.ai-config-prompt {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.ai-config-prompt-content {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.ai-config-prompt-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.ai-config-prompt-input {
+  width: 100%;
+}
+
+.ai-config-prompt-input textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background-color: #fafafa;
+  color: #1f2937;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+/* Focus State */
+.ai-config-prompt-input textarea:focus {
+  outline: none;
+  border-color: #1f2937;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-config-prompt-content {
+    padding: 1rem;
+  }
+
+  .ai-config-prompt-input textarea {
+    min-height: 130px;
+  }
+}
+
 
 /* Voice Grid */
 .voice-grid {

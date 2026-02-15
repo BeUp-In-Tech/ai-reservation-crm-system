@@ -142,17 +142,24 @@ const Analytics = () => {
                 {/* Recent AI Interactions */}
                 <div className="recent-activity-card">
                     <h3>Recent AI Interactions</h3>
-                    {stats.recentInteractions.map((activity, index) => (
-                    <div key={index} className="activity-row">
-                        <span className="activity-name">{activity.name}</span>
-                        <span className={`status-badge ${activity.status.toLowerCase()}`}>
-                            {activity.status}
-                        </span>
-                        <span className="activity-time">{activity.time}</span>
-                        <span>{activity.interaction}</span>
+
+                    <div className="activity-table">
+                        {stats.recentInteractions.map((activity, index) => (
+                            <div key={index} className="activity-row">
+                                <span className="activity-name">{activity.name}</span>
+
+                                <span className={`status-badge ${activity.status.toLowerCase()}`}>
+                                    {activity.status}
+                                </span>
+
+                                <span className="activity-time">{activity.time}</span>
+
+                                <span className="activity-interaction">{activity.interaction}</span>
+                            </div>
+                        ))}
                     </div>
-                ))}
                 </div>
+
             </main>
         </div>
     );

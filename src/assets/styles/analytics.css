@@ -133,11 +133,10 @@ h3 {
 
 .activity-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 1rem;   /* 👈 spacing between elements */
 }
+
 
 .activity-row:last-child {
   border-bottom: none;
@@ -151,30 +150,17 @@ h3 {
 }
 
 .status-badge {
-  padding: 0.25rem 1rem;
-  /* Increase the horizontal padding for wider badge */
-  min-width: 100px;
-  /* Ensure the badge has a minimum width */
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.5rem;
-  background-color: #e5e7eb;
-  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;      /* smaller padding */
+  font-size: 0.7rem;     /* smaller text */
   font-weight: 600;
-  font-size: 0.75rem;
-  text-align: center;
+  border-radius: 999px;  /* pill shape */
+  min-width: auto;       /* remove fixed width */
+  white-space: nowrap;
 }
 
-.status-badge.converted {
-  background-color: #d1fae5;
-  color: #16a34a;
-}
-
-.status-badge.hands-off {
-  background-color: #fef2f2;
-  /* Light red background */
-  color: #ef4444;
-  /* Red text color */
-}
 
 .activity-time {
   font-size: 0.75rem;
@@ -198,6 +184,7 @@ h3 {
 .status-badge.converted {
   background-color: #d1fae5;
   color: #16a34a;
+  text-align: center;
 }
 
 .status-badge.hands-off {
@@ -205,6 +192,7 @@ h3 {
   /* Light red background */
   color: #f74949;
   /* Red text color */
+  text-align: center;
 }
 
 @media (max-width: 1023px) {

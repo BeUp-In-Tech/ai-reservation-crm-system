@@ -141,24 +141,64 @@
 
 .content-column {
     display: flex;
-    flex-direction: row;
-    width: 48%;
-    gap: 1rem;
+    flex-wrap: wrap;          /* Allows wrapping on smaller screens */
+    width: 100%;              /* Remove fixed 50% */
+    gap: 1.5rem;              /* Better spacing */
 }
+
+.content-column .input-group1,
+.content-column .input-group2 {
+    display: flex;
+    flex-direction: column;   /* Stack label + input */
+    flex: 1;                  /* Equal width */
+    min-width: 220px;         /* Prevents shrinking too much */
+    margin-bottom: 0.5rem;
+    color: #181616;
+}
+
+.content-column label {
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.content-column input,
+.content-column select {
+    padding: 8px 12px;
+    background-color: #f3f4f6;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    color: #8a7f7f;
+}
+
 
 .content-column1 {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    gap: 3rem;
+  display: flex;
+  flex-wrap: wrap;          /* important */
+  gap: 1.5rem;              /* reduce from 3rem */
+  width: 100%;
 }
 
+.content-column1 .input-group {
+  flex: 1;
+  min-width: 240px;         /* keeps each field readable */
+}
+
+/* textarea row full width */
 .content-row1 {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.content-row1 .input-group {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .content-column1 .input-group { min-width: 300px; }
+}
+@media (max-width: 600px) {
+  .content-column1 .input-group { min-width: 100%; }
 }
 
 .content-row3 {
@@ -175,35 +215,36 @@
     gap: 1rem;
 }
 
+/* keep your existing input styles */
 .input-group {
-    margin-bottom: 0.5rem;
-    width: 100%;
-    color: #181616;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  color: #181616;
 }
 
 .input-group label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #4b5563;
-    margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;
-    background-color: white;
-    color: #8a7f7f;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  color: #8a7f7f;
 }
 
 .input-group textarea {
-    resize: vertical;
-    min-height: 80px;
+  resize: vertical;
+  min-height: 100px;
 }
 
 /* Toggle Group Styles */
@@ -384,13 +425,13 @@
 }
 
 /* Team Permission Card */
-.team-permission-card {
+/* .team-permission-card {
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 1rem;
     overflow: hidden;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-}
+} */
 
 /* Header */
 .team-header {
@@ -548,6 +589,7 @@
     color: #111827;
     margin: 0;
     line-height: 1.2;
+    text-align: left;
 }
 
 .member-email {
@@ -555,6 +597,7 @@
     color: #6b7280;
     margin: 0;
     line-height: 1.2;
+    text-align: left;
 }
 
 /* Role Tag */

@@ -546,11 +546,15 @@ body {
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: #e5e7eb;
 }
 
 .status-confirmed {
@@ -560,12 +564,12 @@ body {
 
 .status-pending {
   background-color: #fed7aa;
-  color: #9a3412;
+  color: #aa411e;
 }
 
 .status-cancelled {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: #fee2e2;
+  color: #cf2f19;
 }
 
 .action-menu-btn {

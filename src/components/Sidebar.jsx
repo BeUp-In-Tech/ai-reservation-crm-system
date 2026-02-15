@@ -19,7 +19,8 @@ const menuRoutes = {
   'Manage Business': '/addBusiness',
   'AI Configuration': '/aiconfiguration',
   'Analytics': '/analytics', // Update this when Analytics page is created
-  'Settings': '/settings'   // Update this when Settings page is created
+  'Settings': '/settings',   // Update this when Settings page is created
+  'Profile': '/profile'
 };
 
 // Map routes to menu names (for detecting active menu from URL)
@@ -29,7 +30,8 @@ const routeToMenu = {
   '/addBusiness': 'Manage Business',
   '/aiconfiguration': 'AI Configuration',
   '/analytics': 'Analytics',
-  '/settings': 'Settings'
+  '/settings': 'Settings',
+  '/profile': 'Profile'
 };
 
 const Sidebar = () => {
@@ -115,18 +117,20 @@ const Sidebar = () => {
           <span>Log Out</span>
         </button>
 
-        <div className="user-profile">
-          <img
-            src="https://i.pravatar.cc/150?img=12"
-            alt="User"
-            className="user-avatar"
-          />
-          <div className="user-info">
-            <div className="user-name">Brock Dixon</div>
-            <div className="user-role">Admin</div>
+        <button className="profile-btn" onClick={() => handleMenuClick('Profile')}>
+          <div className={`user-profile ${activeMenu === 'Profile' ? 'active' : ''}`}>
+            <img
+              src="https://i.pravatar.cc/150?img=12"
+              alt="User"
+              className="user-avatar"
+            />
+            <div className="user-info">
+              <div className="user-name">Brock Dixon</div>
+              <div className="user-role">Admin</div>
+            </div>
+            <div className="notification-badge">🔔</div>
           </div>
-          <div className="notification-badge">🔔</div>
-        </div>
+        </button>
       </div>
     </aside>
   );
