@@ -199,8 +199,8 @@ export default function VoiceCallModal({ businessSlug, serviceName, onClose, onH
           {!connected && !callEnded && messages.length === 0 && (
             <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#6b7280' }}>
               <Phone size={32} color="#4ade80" style={{ margin: '0 auto 12px' }} />
-              <p style={{ fontSize: '0.9rem', marginBottom: 4 }}>Ready to call about <strong style={{ color: '#e4e4e7' }}>{serviceName}</strong></p>
-              <p style={{ fontSize: '0.8rem' }}>You'll hear service info and can book via chat</p>
+              <p style={{ fontSize: '0.9rem', marginBottom: 4, color: '#e4e4e7' }}>Ready to call about <strong>{serviceName}</strong></p>
+              <p style={{ fontSize: '0.8rem', color: '#737a8aff' }}>You'll hear service info and can book via chat</p>
             </div>
           )}
 
