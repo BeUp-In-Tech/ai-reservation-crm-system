@@ -15,6 +15,7 @@ import '../assets/styles/sidebar.css';
 import logo from '../assets/logo.png.png';
 import { usePlatform } from '../pages/platformContext';
 
+// Map menu names to their routes
 const menuRoutes = {
   'Dashboard': '/adminDashboard',
   'Bookings': '/adminBooking',
@@ -26,6 +27,7 @@ const menuRoutes = {
   'Profile': '/profile'
 };
 
+// Map routes to menu names (for detecting active menu from URL)
 const routeToMenu = {
   '/adminDashboard': 'Dashboard',
   '/adminBooking': 'Bookings',
@@ -50,13 +52,8 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    // Clear cookie
     Cookies.remove('access_token');
-    // Clear localStorage
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('lastSavedConfig');
-    // Redirect to login
-    navigate('/adminlogin');
+    navigate('/');
   };
 
   return (
@@ -67,6 +64,7 @@ const Sidebar = () => {
             <img src={logo} alt="Logo" className="logo-image" />
           </div>
           <div className="sidebar-logo-text">
+            {/* ── Platform name from context — updates everywhere instantly ── */}
             <div className="sidebar-logo-title">{platformName}</div>
             <div className="sidebar-logo-subtitle">ADMIN CONSOLE</div>
           </div>
