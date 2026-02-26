@@ -14,8 +14,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = Cookies.get('access_token') || localStorage.getItem('access_token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    // Don't add auth header for reset password endpoint
+    if (!config.url?.includes('/reset-password')) {
+        const token = Cookies.get('access_token') || localStorage.getItem('access_token');
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 
