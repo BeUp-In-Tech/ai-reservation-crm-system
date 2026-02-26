@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import '../assets/styles/forgotPassword.css';
+
+const api = axios.create({
+    baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+});
+
+api.interceptors.request.use((config) => {
+    const token = Cookies.get('access_token') || localStorage.getItem('access_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -30,7 +46,7 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            await axios.post('/api/v1/admin/auth/forgot-password', { email });
+            await api.post('/api/v1/admin/auth/forgot-password', { email });
             setSuccess('Reset link sent! Redirecting you to reset your password...');
             setTimeout(() => navigate('/reset-password'), 2000);
         } catch (err) {

@@ -1,7 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import '../assets/styles/resetPassword.css';
+
+const api = axios.create({
+    baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+});
+
+api.interceptors.request.use((config) => {
+    const token = Cookies.get('access_token') || localStorage.getItem('access_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
@@ -39,7 +55,7 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            await axios.post('/api/v1/admin/auth/reset-password', {
+            await api.post('/api/v1/admin/auth/reset-password', {
                 token,
                 new_password: newPassword,
                 confirm_password: confirmPassword,
