@@ -28,9 +28,22 @@ export default function BookingPayment() {
   };
 
   const handlePayment = () => {
-    const confirmed = window.confirm('Processing payment... Click OK to continue to home page.');
+    const confirmed = window.confirm('Processing payment... Click OK to continue to confirmation page.');
     if (confirmed) {
-      navigate('/');
+      // Generate a booking ID for the confirmation
+      const bookingId = 'BK' + Date.now();
+      
+      // Navigate to payment confirmation page with all the booking details
+      navigate('/payment-confirmation', {
+        state: {
+          serviceName,
+          price,
+          businessName,
+          selectedTime,
+          selectedDate,
+          bookingId
+        }
+      });
     }
   };
 
