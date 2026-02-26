@@ -53,8 +53,9 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('lastSavedConfig');
     Cookies.remove('access_token');
-    navigate('/');
+    navigate('/');  // ← was '/', now goes to login page
   };
 
   return (
