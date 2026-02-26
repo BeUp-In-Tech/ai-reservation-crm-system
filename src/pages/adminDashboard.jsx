@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ChevronDown, Download, TrendingUp, TrendingDown,
-  Phone, Calendar, BarChart2, DollarSign, RefreshCw, AlertCircle,
+  ChevronDown, Download, Phone, Calendar, BarChart2,
+  DollarSign, RefreshCw, AlertCircle, TrendingUp, TrendingDown,
+  CheckCircle, XCircle, Clock, Users, Activity,
 } from 'lucide-react';
-import { Line, Pie, Bar } from 'react-chartjs-2';
+import { Line, Pie, Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, PointElement, LineElement,
@@ -25,33 +26,28 @@ const api = axios.create({
   withCredentials: true,
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 });
-
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('access_token');
+  const token = Cookies.get('access_token') || localStorage.getItem('access_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
 const DATE_OPTIONS = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'This Year'];
 
-// ── Status config ──────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
-  PENDING_PAYMENT: { bg: '#fef3c7', color: '#92400e', label: 'Pending Payment' },
-  INITIATED:       { bg: '#dbeafe', color: '#1e40af', label: 'Initiated' },
-  CONFIRMED:       { bg: '#d1fae5', color: '#065f46', label: 'Confirmed' },
-  CANCELLED:       { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' },
-  EXPIRED:         { bg: '#f3f4f6', color: '#6b7280', label: 'Expired' },
+  PENDING_PAYMENT: { bg: '#fef3c7', color: '#92400e', label: 'Pending Payment', chartColor: '#f59e0b' },
+  INITIATED:       { bg: '#dbeafe', color: '#1e40af', label: 'Initiated',        chartColor: '#3b82f6' },
+  CONFIRMED:       { bg: '#d1fae5', color: '#065f46', label: 'Confirmed',        chartColor: '#10b981' },
+  CANCELLED:       { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled',        chartColor: '#ef4444' },
+  EXPIRED:         { bg: '#f3f4f6', color: '#6b7280', label: 'Expired',          chartColor: '#94a3b8' },
 };
-const getStatusStyle = (s) => STATUS_CONFIG[s] ?? { bg: '#f3f4f6', color: '#374151', label: s };
+const getStatusStyle = (s) => STATUS_CONFIG[s] ?? { bg: '#f3f4f6', color: '#374151', label: s, chartColor: '#cbd5e1' };
 
-// ── Avatar helpers ─────────────────────────────────────────────────────────
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#059669', '#d97706', '#dc2626'];
 const getInitials = (name) => {
   if (!name) return '?';
   const parts = name.trim().split(' ');
-  return parts.length >= 2
-    ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-    : parts[0].slice(0, 2).toUpperCase();
+  return parts.length >= 2 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase() : parts[0].slice(0, 2).toUpperCase();
 };
 const getAvatarColor = (name) => {
   if (!name) return '#94a3b8';
@@ -60,8 +56,7 @@ const getAvatarColor = (name) => {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
 
-// ── Derive chart data from recent_bookings ────────────────────────────────
-// Groups bookings by date for the trend line
+// ── Chart derivations ──────────────────────────────────────────────────────
 const buildBookingTrends = (bookings) => {
   const map = {};
   bookings.forEach((b) => {
@@ -73,14 +68,12 @@ const buildBookingTrends = (bookings) => {
     .map(([label, value]) => ({ label, value }));
 };
 
-// Groups bookings by status for the donut chart
 const buildStatusBreakdown = (bookings) => {
   const map = {};
   bookings.forEach((b) => { map[b.status] = (map[b.status] || 0) + 1; });
   return map;
 };
 
-// Groups bookings by hour for the bar chart
 const buildHourlyVolume = (bookings) => {
   const map = {};
   bookings.forEach((b) => {
@@ -93,56 +86,70 @@ const buildHourlyVolume = (bookings) => {
     .map(([label, count]) => ({ label, count }));
 };
 
-// ── Chart base options ─────────────────────────────────────────────────────
+const buildWeeklyComparison = (bookings) => {
+  const now = new Date();
+  const thisWeekStart = new Date(now); thisWeekStart.setDate(now.getDate() - 7);
+  const lastWeekStart = new Date(now); lastWeekStart.setDate(now.getDate() - 14);
+
+  const thisWeek = bookings.filter(b => new Date(b.created_at) >= thisWeekStart).length;
+  const lastWeek = bookings.filter(b => {
+    const d = new Date(b.created_at);
+    return d >= lastWeekStart && d < thisWeekStart;
+  }).length;
+
+  const change = lastWeek === 0 ? 100 : Math.round(((thisWeek - lastWeek) / lastWeek) * 100);
+  return { thisWeek, lastWeek, change };
+};
+
+// ── Chart options ──────────────────────────────────────────────────────────
 const lineOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: true, maintainAspectRatio: false,
   plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
   scales: {
     x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 }, color: '#94a3b8' } },
-    y: {
-      grid: { color: 'rgba(0,0,0,0.04)' },
-      ticks: { font: { size: 11 }, color: '#94a3b8', stepSize: 1, precision: 0 },
-      beginAtZero: true,
-    },
+    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 }, color: '#94a3b8', stepSize: 1, precision: 0 }, beginAtZero: true },
   },
   elements: { line: { tension: 0.45 }, point: { radius: 4, hoverRadius: 6 } },
 };
 
 const barOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { mode: 'index', intersect: false },
-  },
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
   scales: {
     x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 }, color: '#94a3b8' } },
-    y: {
-      grid: { color: 'rgba(0,0,0,0.04)' },
-      ticks: { font: { size: 11 }, color: '#94a3b8', stepSize: 1, precision: 0 },
-      beginAtZero: true,
-    },
+    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 }, color: '#94a3b8', stepSize: 1, precision: 0 }, beginAtZero: true },
   },
 };
 
 const pieOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: true, maintainAspectRatio: false,
   plugins: {
-    legend: {
-      position: 'bottom',
-      labels: { font: { size: 12 }, color: '#334155', padding: 16, usePointStyle: true },
-    },
+    legend: { position: 'bottom', labels: { font: { size: 12 }, color: '#334155', padding: 16, usePointStyle: true } },
     tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.parsed}` } },
   },
   cutout: '62%',
 };
 
-// ── Skeleton helper ────────────────────────────────────────────────────────
+// ── Skeleton ───────────────────────────────────────────────────────────────
 const Sk = ({ w = '80%', h = '14px', r = '4px' }) => (
   <div className="an-skel" style={{ width: w, height: h, borderRadius: r }} />
 );
+
+// ── Mini stat pill ─────────────────────────────────────────────────────────
+function TrendPill({ value }) {
+  const positive = value >= 0;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: '3px',
+      background: positive ? '#dcfce7' : '#fee2e2',
+      color: positive ? '#16a34a' : '#dc2626',
+      borderRadius: '999px', padding: '2px 8px', fontSize: '0.72rem', fontWeight: '700',
+    }}>
+      {positive ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+      {Math.abs(value)}%
+    </span>
+  );
+}
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function Analytics() {
@@ -154,15 +161,11 @@ export default function Analytics() {
   const [searchQuery, setSearchQuery] = useState('');
   const [lastSync,    setLastSync]    = useState(null);
 
-  // ── Fetch ────────────────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/api/v1/admin/dashboard', {
-        params: { period: dateFilter },
-      });
-      // API returns flat: { total_bookings, total_calls, recent_bookings }
+      const res = await api.get('/api/v1/admin/dashboard', { params: { period: dateFilter } });
       const d = res?.data?.data ?? res?.data ?? {};
       setRawData(d);
       setLastSync(new Date());
@@ -180,63 +183,36 @@ export default function Analytics() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // ── Export ───────────────────────────────────────────────────────────────
-  const handleExport = async () => {
-    try {
-      // Create CSV data from existing dashboard data
-      const bookings = recentBookings || [];
-      const csvHeaders = ['Booking ID', 'Customer', 'Service', 'Status', 'Date', 'Time', 'Price'];
-      const csvRows = bookings.map(booking => [
-        booking.id || 'N/A',
-        booking.customer_name || booking.customer_email || 'N/A',
-        booking.service_name || 'N/A',
-        booking.status || 'N/A',
-        booking.date || 'N/A',
-        booking.time || 'N/A',
-        booking.price || 'N/A'
-      ]);
-      
-      // Create CSV content
-      const csvContent = [
-        csvHeaders.join(','),
-        ...csvRows.map(row => row.map(cell => `"${cell}"`).join(','))
-      ].join('\n');
-      
-      // Create and download CSV file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `dashboard-export-${Date.now()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
-    }
-  };
-
-  // ── Derived values from real API data ─────────────────────────────────
+  // ── Derived values ────────────────────────────────────────────────────
   const totalBookings   = rawData?.total_bookings ?? 0;
   const totalCalls      = rawData?.total_calls    ?? 0;
   const recentBookings  = Array.isArray(rawData?.recent_bookings) ? rawData.recent_bookings : [];
 
-  const pendingCount    = recentBookings.filter((b) => b.status === 'PENDING_PAYMENT').length;
-  const confirmedCount  = recentBookings.filter((b) => b.status === 'CONFIRMED').length;
+  const confirmedCount  = recentBookings.filter(b => b.status === 'CONFIRMED').length;
+  const pendingCount    = recentBookings.filter(b => b.status === 'PENDING_PAYMENT').length;
+  const cancelledCount  = recentBookings.filter(b => b.status === 'CANCELLED').length;
+  const expiredCount    = recentBookings.filter(b => b.status === 'EXPIRED').length;
+  const initiatedCount  = recentBookings.filter(b => b.status === 'INITIATED').length;
 
-  // Chart derivations
-  const bookingTrends   = buildBookingTrends(recentBookings);
-  const statusBreakdown = buildStatusBreakdown(recentBookings);
-  const hourlyVolume    = buildHourlyVolume(recentBookings);
+  const conversionRate  = recentBookings.length > 0
+    ? Math.round((confirmedCount / recentBookings.length) * 100)
+    : 0;
+
+  const cancellationRate = recentBookings.length > 0
+    ? Math.round((cancelledCount / recentBookings.length) * 100)
+    : 0;
+
+  const weeklyComparison = buildWeeklyComparison(recentBookings);
+  const bookingTrends    = buildBookingTrends(recentBookings);
+  const statusBreakdown  = buildStatusBreakdown(recentBookings);
+  const hourlyVolume     = buildHourlyVolume(recentBookings);
 
   // ── Chart datasets ────────────────────────────────────────────────────
   const bookingTrendsData = {
-    labels: bookingTrends.map((t) => t.label),
+    labels: bookingTrends.map(t => t.label),
     datasets: [{
       label: 'Bookings',
-      data:  bookingTrends.map((t) => t.value),
+      data: bookingTrends.map(t => t.value),
       borderColor: '#2563eb',
       backgroundColor: 'rgba(37,99,235,0.08)',
       fill: true,
@@ -246,45 +222,75 @@ export default function Analytics() {
     }],
   };
 
-  const STATUS_CHART_COLORS = {
-    PENDING_PAYMENT: '#f59e0b',
-    INITIATED:       '#3b82f6',
-    CONFIRMED:       '#10b981',
-    CANCELLED:       '#ef4444',
-    EXPIRED:         '#94a3b8',
-  };
   const statusLabels = Object.keys(statusBreakdown);
   const bookingSourceData = {
-    labels: statusLabels.map((s) => STATUS_CONFIG[s]?.label ?? s),
+    labels: statusLabels.map(s => STATUS_CONFIG[s]?.label ?? s),
     datasets: [{
-      data: statusLabels.map((s) => statusBreakdown[s]),
-      backgroundColor: statusLabels.map((s) => STATUS_CHART_COLORS[s] ?? '#cbd5e1'),
-      hoverBackgroundColor: statusLabels.map((s) => STATUS_CHART_COLORS[s] ?? '#94a3b8'),
+      data: statusLabels.map(s => statusBreakdown[s]),
+      backgroundColor: statusLabels.map(s => STATUS_CONFIG[s]?.chartColor ?? '#cbd5e1'),
       borderWidth: 0,
     }],
   };
 
   const hourlyVolumeData = {
-    labels: hourlyVolume.map((h) => h.label),
+    labels: hourlyVolume.map(h => h.label),
     datasets: [{
-      label: 'Bookings Created',
-      data:  hourlyVolume.map((h) => h.count),
+      label: 'Bookings',
+      data: hourlyVolume.map(h => h.count),
       backgroundColor: 'rgba(37,99,235,0.75)',
       borderRadius: 6,
       borderSkipped: false,
     }],
   };
 
+  // Weekly comparison bar
+  const weeklyCompData = {
+    labels: ['Last Week', 'This Week'],
+    datasets: [{
+      data: [weeklyComparison.lastWeek, weeklyComparison.thisWeek],
+      backgroundColor: ['rgba(148,163,184,0.6)', 'rgba(37,99,235,0.8)'],
+      borderRadius: 8,
+      borderSkipped: false,
+    }],
+  };
+  const weeklyCompOptions = {
+    ...barOptions,
+    plugins: { ...barOptions.plugins, legend: { display: false } },
+    scales: {
+      ...barOptions.scales,
+      y: { ...barOptions.scales.y, ticks: { ...barOptions.scales.y.ticks, stepSize: 1 } },
+    },
+  };
+
   // ── Stat cards ────────────────────────────────────────────────────────
   const statCards = [
-    { label: 'Total Bookings',   value: totalBookings,  icon: Calendar,   color: '#2563eb' },
-    { label: 'Total Calls',      value: totalCalls,     icon: Phone,      color: '#7c3aed' },
-    { label: 'Pending Payment',  value: pendingCount,   icon: BarChart2,  color: '#f59e0b' },
-    { label: 'Confirmed',        value: confirmedCount, icon: DollarSign, color: '#10b981' },
+    { label: 'Total Bookings',     value: totalBookings,    icon: Calendar,     color: '#2563eb', sub: `${recentBookings.length} recent` },
+    { label: 'Total Calls',        value: totalCalls,       icon: Phone,        color: '#7c3aed', sub: 'voice interactions' },
+    { label: 'Conversion Rate',    value: `${conversionRate}%`, icon: TrendingUp, color: '#10b981', sub: `${confirmedCount} confirmed` },
+    { label: 'Cancellation Rate',  value: `${cancellationRate}%`, icon: XCircle,  color: '#ef4444', sub: `${cancelledCount} cancelled` },
+    { label: 'Pending Payment',    value: pendingCount,     icon: Clock,        color: '#f59e0b', sub: 'awaiting payment' },
+    { label: 'Initiated',          value: initiatedCount,   icon: Activity,     color: '#6366f1', sub: 'in progress' },
   ];
 
-  // ── Filtered recent bookings for table ───────────────────────────────
-  const filtered = recentBookings.filter((b) => {
+  // ── Export ────────────────────────────────────────────────────────────
+  const handleExport = () => {
+    const headers = ['Booking ID', 'Customer', 'Phone', 'Status', 'Created At'];
+    const rows = recentBookings.map(b => [
+      b.public_tracking_id ?? '—',
+      b.customer_name ?? 'Guest',
+      b.customer_phone ?? '—',
+      b.status ?? '—',
+      b.created_at ? new Date(b.created_at).toLocaleString() : '—',
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `analytics-${Date.now()}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  const filtered = recentBookings.filter(b => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -298,7 +304,6 @@ export default function Analytics() {
   return (
     <div className="dashboard-container">
       <Sidebar />
-
       <main className="main-content">
 
         {/* ── Header ── */}
@@ -308,30 +313,22 @@ export default function Analytics() {
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
             <input
-              type="text"
-              placeholder="Search by name, phone, booking ID or status…"
-              className="search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              type="text" placeholder="Search by name, phone, booking ID or status…"
+              className="search-input" value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <button
-              className="an-refresh-btn"
-              onClick={fetchData}
-              disabled={loading}
-              title="Refresh data"
-            >
+            <button className="an-refresh-btn" onClick={fetchData} disabled={loading} title="Refresh">
               <RefreshCw size={15} className={loading ? 'spinning-icon' : ''} />
             </button>
             <button className="export-btn" onClick={handleExport} disabled={loading}>
               <Download size={15} className="export-icon" />
-              Export Data
+              Export CSV
             </button>
           </div>
         </header>
 
-        {/* ── Error banner ── */}
         {error && (
           <div className="an-error-banner" role="alert">
             <AlertCircle size={15} />
@@ -345,29 +342,18 @@ export default function Analytics() {
         <div className="dashboard-title-section">
           <div>
             <h1 className="dashboard-title">Dashboard Analytics</h1>
-            {lastSync && (
-              <p className="an-last-sync" style={{ textAlign: 'left' }}>
-                Updated {lastSync.toLocaleTimeString()}
-              </p>
-            )}
+            {lastSync && <p className="an-last-sync" style={{ textAlign: 'left' }}>Updated {lastSync.toLocaleTimeString()}</p>}
           </div>
           <div style={{ position: 'relative' }}>
-            <button className="date-filter-btn" onClick={() => setShowFilter((v) => !v)}>
+            <button className="date-filter-btn" onClick={() => setShowFilter(v => !v)}>
               <span>{dateFilter}</span>
-              <ChevronDown
-                size={15}
-                className="chevron-icon"
-                style={{ transform: showFilter ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-              />
+              <ChevronDown size={15} className="chevron-icon" style={{ transform: showFilter ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
             </button>
             {showFilter && (
               <div className="an-date-dropdown">
-                {DATE_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    className={`an-date-option ${dateFilter === opt ? 'active' : ''}`}
-                    onClick={() => { setDateFilter(opt); setShowFilter(false); }}
-                  >
+                {DATE_OPTIONS.map(opt => (
+                  <button key={opt} className={`an-date-option ${dateFilter === opt ? 'active' : ''}`}
+                    onClick={() => { setDateFilter(opt); setShowFilter(false); }}>
                     {opt}
                   </button>
                 ))}
@@ -376,33 +362,70 @@ export default function Analytics() {
           </div>
         </div>
 
-        {/* ── Stat cards ── */}
-        <div className="stats-grid">
-          {statCards.map(({ label, value, icon: Icon, color }) => (
+        {/* ── 6 Stat cards ── */}
+        <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+          {statCards.map(({ label, value, icon: Icon, color, sub }) => (
             <div className="stat-card an-stat-card" key={label}>
               <div className="an-stat-top">
                 <div className="an-stat-icon-wrap" style={{ color }}>
                   <Icon size={18} strokeWidth={2} />
                 </div>
+                {!loading && label === 'Total Bookings' && (
+                  <TrendPill value={weeklyComparison.change} />
+                )}
               </div>
               {loading
                 ? <Sk w="60%" h="28px" />
                 : <div className="stat-value an-stat-value">{value}</div>}
               <div className="stat-label an-stat-label">{label}</div>
+              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>{sub}</div>
               <div className="stat-progress an-stat-progress">
-                <div
-                  className="stat-progress-bar an-stat-bar"
-                  style={{ width: loading ? '0%' : '60%', backgroundColor: color, transition: 'width 0.6s ease' }}
-                />
+                <div className="stat-progress-bar an-stat-bar"
+                  style={{ width: loading ? '0%' : '60%', backgroundColor: color, transition: 'width 0.6s ease' }} />
               </div>
             </div>
           ))}
         </div>
 
-        {/* ── Charts ── */}
+        {/* ── Summary row ── */}
+        {!loading && recentBookings.length > 0 && (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1rem', margin: '1rem 0',
+          }}>
+            {[
+              { label: 'Confirmed', count: confirmedCount, total: recentBookings.length, color: '#10b981' },
+              { label: 'Pending Payment', count: pendingCount, total: recentBookings.length, color: '#f59e0b' },
+              { label: 'Cancelled', count: cancelledCount, total: recentBookings.length, color: '#ef4444' },
+              { label: 'Expired', count: expiredCount, total: recentBookings.length, color: '#94a3b8' },
+            ].map(({ label, count, total, color }) => {
+              const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+              return (
+                <div key={label} style={{
+                  background: 'white', borderRadius: '12px', padding: '1rem 1.25rem',
+                  border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '500' }}>{label}</span>
+                    <span style={{ fontSize: '0.8rem', color, fontWeight: '700' }}>{pct}%</span>
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', lineHeight: 1 }}>{count}</div>
+                  <div style={{
+                    marginTop: '0.6rem', height: '4px', borderRadius: '2px',
+                    background: '#f1f5f9', overflow: 'hidden',
+                  }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '2px', transition: 'width 0.8s ease' }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Charts grid ── */}
         <div className="an-charts-grid">
 
-          {/* Booking trends line chart — derived from created_at dates */}
+          {/* Booking trends */}
           <div className="an-chart-card an-chart-wide">
             <div className="an-chart-header">
               <div>
@@ -411,17 +434,13 @@ export default function Analytics() {
               </div>
             </div>
             <div className="an-chart-body">
-              {loading ? (
-                <div className="an-chart-skeleton"><Sk w="100%" h="100%" r="8px" /></div>
-              ) : bookingTrends.length > 0 ? (
-                <Line data={bookingTrendsData} options={lineOptions} />
-              ) : (
-                <div className="an-chart-empty">No booking trend data available.</div>
-              )}
+              {loading ? <div className="an-chart-skeleton"><Sk w="100%" h="100%" r="8px" /></div>
+                : bookingTrends.length > 0 ? <Line data={bookingTrendsData} options={lineOptions} />
+                : <div className="an-chart-empty">No trend data available.</div>}
             </div>
           </div>
 
-          {/* Status breakdown donut — derived from recent_bookings statuses */}
+          {/* Status donut */}
           <div className="an-chart-card an-chart-narrow">
             <div className="an-chart-header">
               <div>
@@ -430,51 +449,68 @@ export default function Analytics() {
               </div>
             </div>
             <div className="an-chart-body an-donut-wrap">
-              {loading ? (
-                <div className="an-chart-skeleton"><Sk w="160px" h="160px" r="50%" /></div>
-              ) : statusLabels.length > 0 ? (
-                <>
-                  <Pie data={bookingSourceData} options={pieOptions} />
-                  <div className="an-donut-center">
-                    <span className="an-donut-pct">{recentBookings.length}</span>
-                    <span className="an-donut-label">total</span>
-                  </div>
-                </>
-              ) : (
-                <div className="an-chart-empty">No status data available.</div>
-              )}
+              {loading ? <div className="an-chart-skeleton"><Sk w="160px" h="160px" r="50%" /></div>
+                : statusLabels.length > 0 ? (
+                  <>
+                    <Pie data={bookingSourceData} options={pieOptions} />
+                    <div className="an-donut-center">
+                      <span className="an-donut-pct">{recentBookings.length}</span>
+                      <span className="an-donut-label">total</span>
+                    </div>
+                  </>
+                ) : <div className="an-chart-empty">No status data.</div>}
             </div>
-            {/* Legend rows */}
             <div className="an-source-rows">
-              {statusLabels.map((s) => (
+              {statusLabels.map(s => (
                 <div className="an-source-row" key={s}>
-                  <span className="an-source-dot" style={{ background: STATUS_CHART_COLORS[s] ?? '#cbd5e1' }} />
+                  <span className="an-source-dot" style={{ background: STATUS_CONFIG[s]?.chartColor ?? '#cbd5e1' }} />
                   <span className="an-source-name">{STATUS_CONFIG[s]?.label ?? s}</span>
-                  {loading
-                    ? <Sk w="20px" h="12px" />
-                    : <span className="an-source-pct">{statusBreakdown[s]}</span>}
+                  {loading ? <Sk w="20px" h="12px" /> : <span className="an-source-pct">{statusBreakdown[s]}</span>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Hourly volume bar chart — derived from created_at hours */}
-          <div className="an-chart-card an-chart-full">
+          {/* Hourly volume */}
+          <div className="an-chart-card an-chart-wide">
             <div className="an-chart-header">
               <div>
                 <h3 className="an-chart-title">Booking Activity by Hour</h3>
-                <p className="an-chart-sub">When bookings are being created throughout the day</p>
+                <p className="an-chart-sub">When bookings are created throughout the day</p>
               </div>
             </div>
             <div className="an-chart-body">
-              {loading ? (
-                <div className="an-chart-skeleton"><Sk w="100%" h="100%" r="8px" /></div>
-              ) : hourlyVolume.length > 0 ? (
-                <Bar data={hourlyVolumeData} options={barOptions} />
-              ) : (
-                <div className="an-chart-empty">No activity data available.</div>
-              )}
+              {loading ? <div className="an-chart-skeleton"><Sk w="100%" h="100%" r="8px" /></div>
+                : hourlyVolume.length > 0 ? <Bar data={hourlyVolumeData} options={barOptions} />
+                : <div className="an-chart-empty">No activity data available.</div>}
             </div>
+          </div>
+
+          {/* Week-over-week comparison */}
+          <div className="an-chart-card an-chart-narrow">
+            <div className="an-chart-header">
+              <div>
+                <h3 className="an-chart-title">Week vs Week</h3>
+                <p className="an-chart-sub">This week vs last week</p>
+              </div>
+              {!loading && <TrendPill value={weeklyComparison.change} />}
+            </div>
+            <div className="an-chart-body">
+              {loading ? <div className="an-chart-skeleton"><Sk w="100%" h="100%" r="8px" /></div>
+                : <Bar data={weeklyCompData} options={weeklyCompOptions} />}
+            </div>
+            {!loading && (
+              <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '0.75rem', fontSize: '0.8rem' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#64748b' }}>{weeklyComparison.lastWeek}</div>
+                  <div style={{ color: '#94a3b8' }}>Last week</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#2563eb' }}>{weeklyComparison.thisWeek}</div>
+                  <div style={{ color: '#94a3b8' }}>This week</div>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
@@ -484,16 +520,13 @@ export default function Analytics() {
           <div className="an-table-header">
             <div>
               <h3 className="an-chart-title">Recent Bookings</h3>
-              
             </div>
-            <p className="an-chart-sub" style={{textAlign:'left'}}>
-                {loading ? 'Loading…' : `${filtered.length} booking${filtered.length !== 1 ? 's' : ''} shown`}
-              </p>
-            {/* <p className="view-all-link">View Bookings</p> */}
+            <p className="an-chart-sub" style={{ textAlign: 'left' }}>
+              {loading ? 'Loading…' : `${filtered.length} booking${filtered.length !== 1 ? 's' : ''} shown`}
+            </p>
           </div>
 
           <div className="an-table">
-            {/* Table head */}
             <div className="an-table-head">
               <div className="an-th">Customer</div>
               <div className="an-th">Booking ID</div>
@@ -502,7 +535,6 @@ export default function Analytics() {
               <div className="an-th">Status</div>
             </div>
 
-            {/* Skeleton rows */}
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <div className="an-table-row" key={i}>
@@ -520,61 +552,33 @@ export default function Analytics() {
             ) : (
               filtered.map((b, i) => {
                 const statusStyle = getStatusStyle(b.status);
-                const initials    = getInitials(b.customer_name);
-                const avatarColor = getAvatarColor(b.customer_name);
                 const createdAt   = b.created_at
-                  ? new Date(b.created_at).toLocaleString('en-US', {
-                      month: 'short', day: 'numeric',
-                      hour: '2-digit', minute: '2-digit',
-                    })
+                  ? new Date(b.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
                   : '—';
-
                 return (
                   <div className="an-table-row" key={b.id} style={{ animationDelay: `${i * 40}ms` }}>
-
-                    {/* Customer */}
                     <div className="an-td">
-                      <div
-                        className="an-avatar"
-                        style={{ backgroundColor: avatarColor, color: 'white', fontWeight: 700 }}
-                      >
-                        {initials}
+                      <div className="an-avatar" style={{ backgroundColor: getAvatarColor(b.customer_name), color: 'white', fontWeight: 700 }}>
+                        {getInitials(b.customer_name)}
                       </div>
                       <span className="an-name">{b.customer_name ?? 'Guest'}</span>
                     </div>
-
-                    {/* Booking ID */}
                     <div className="an-td">
                       <span style={{ fontFamily: 'monospace', fontWeight: '600', fontSize: '0.8rem', color: '#2563eb' }}>
                         {b.public_tracking_id ?? '—'}
                       </span>
                     </div>
-
-                    {/* Phone */}
-                    <div className="an-td an-interaction">
-                      {b.customer_phone ?? '—'}
-                    </div>
-
-                    {/* Created At */}
+                    <div className="an-td an-interaction">{b.customer_phone ?? '—'}</div>
                     <div className="an-td an-time">{createdAt}</div>
-
-                    {/* Status */}
                     <div className="an-td">
-                      <span
-                        style={{
-                          backgroundColor: statusStyle.bg,
-                          color: statusStyle.color,
-                          padding: '3px 10px',
-                          borderRadius: '999px',
-                          fontSize: '0.75rem',
-                          fontWeight: '600',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      <span style={{
+                        backgroundColor: statusStyle.bg, color: statusStyle.color,
+                        padding: '3px 10px', borderRadius: '999px',
+                        fontSize: '0.75rem', fontWeight: '600', whiteSpace: 'nowrap',
+                      }}>
                         {statusStyle.label}
                       </span>
                     </div>
-
                   </div>
                 );
               })

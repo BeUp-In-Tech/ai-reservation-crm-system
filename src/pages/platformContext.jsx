@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('access_token');
+  const token = Cookies.get('access_token') || localStorage.getItem('access_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -22,7 +22,6 @@ const PlatformContext = createContext({
 export const PlatformProvider = ({ children }) => {
   const [platformName, setPlatformName] = useState('AI Reservation & CRM System');
 
-  // Optional: fetch current platform name from API on mount
   useEffect(() => {
     const fetchPlatformName = async () => {
       try {

@@ -15,8 +15,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 // ── API setup ──────────────────────────────────────────────────────────────
-const getToken = () => Cookies.get('access_token') || null;
-
 const api = axios.create({
   baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
   withCredentials: true,
@@ -24,7 +22,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = getToken();
+  const token = Cookies.get('access_token') || localStorage.getItem('access_token');
   if (token) config.headers['Authorization'] = `Bearer ${token}`;
   return config;
 });
@@ -77,7 +75,6 @@ const formatSlot = (iso) => {
   };
 };
 
-// ── Pagination config ──────────────────────────────────────────────────────
 const PAGE_SIZE = 10;
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -98,7 +95,6 @@ export default function Bookings() {
 
   const tabs = ['All', 'INITIATED', 'PENDING_PAYMENT', 'CONFIRMED', 'CANCELLED', 'EXPIRED'];
 
-  // ── Fetch ────────────────────────────────────────────────────────────────
   const fetchBookings = async (statusFilter = 'All') => {
     setLoading(true);
     setError(null);
@@ -142,7 +138,6 @@ export default function Bookings() {
 
   useEffect(() => { fetchBookings(activeTab); }, [activeTab]);
 
-  // ── Filter + paginate ────────────────────────────────────────────────────
   const filtered = bookings.filter((b) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
@@ -165,7 +160,6 @@ export default function Bookings() {
 
       <main className="bookings-main-content">
 
-        {/* ── Page Header ── */}
         <header className="bookings-header">
           <div>
             <h1 className="bookings-page-title">Bookings</h1>
@@ -182,7 +176,6 @@ export default function Bookings() {
           </button>
         </header>
 
-        {/* ── AI Insight ── */}
         <div className="bookings-ai-insight">
           <div className="bookings-ai-insight-icon">
             <Sparkles className="sparkles-icon" />
@@ -198,7 +191,6 @@ export default function Bookings() {
           <a href="/adminDashboard" className="bookings-view-analytics">VIEW ANALYTICS</a>
         </div>
 
-        {/* ── Stats Cards ── */}
         <div className="bookings-stats-grid">
           <div className="bookings-stat-card">
             <div className="bookings-stat-label">Total Bookings</div>
@@ -220,7 +212,6 @@ export default function Bookings() {
           </div>
         </div>
 
-        {/* ── Search & Filters ── */}
         <div className="bookings-search-section">
           <div className="bookings-search-container">
             <Search className="bookings-search-icon" />
@@ -232,19 +223,8 @@ export default function Bookings() {
               className="bookings-search-input"
             />
           </div>
-          {/* <div className="bookings-filter-buttons">
-            <button className="bookings-date-filter">
-              <CalendarDays className="filter-icon" />
-              Date Range
-            </button>
-            <button className="bookings-filters-btn">
-              <SlidersHorizontal className="filter-icon" />
-              Filters
-            </button>
-          </div> */}
         </div>
 
-        {/* ── Tabs ── */}
         <div className="bookings-tabs">
           {tabs.map((tab) => (
             <button
@@ -257,7 +237,6 @@ export default function Bookings() {
           ))}
         </div>
 
-        {/* ── Error Banner ── */}
         {error && (
           <div
             className="bookings-error-banner"
@@ -271,7 +250,6 @@ export default function Bookings() {
           </div>
         )}
 
-        {/* ── Loading ── */}
         {loading && (
           <div className="bookings-loading">
             <div className="loading-spinner" />
@@ -279,12 +257,9 @@ export default function Bookings() {
           </div>
         )}
 
-        {/* ── Table ── */}
         {!loading && !error && (
           <div className="bookings-table-card">
             <div className="bookings-table">
-
-              {/* Header — 5 columns, no Payment or Actions */}
               <div className="bookings-table-header">
                 <div className="bookings-th">CUSTOMER</div>
                 <div className="bookings-th">SERVICE</div>
@@ -293,14 +268,12 @@ export default function Bookings() {
                 <div className="bookings-th">STATUS</div>
               </div>
 
-              {/* Empty state */}
               {paginated.length === 0 && (
                 <div className="bookings-empty-state" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                   {searchQuery ? 'No bookings match your search.' : 'No bookings found.'}
                 </div>
               )}
 
-              {/* Rows */}
               {paginated.map((b) => {
                 const slot        = formatSlot(b.slotStart);
                 const statusStyle = getStatusStyle(b.status);
@@ -309,8 +282,6 @@ export default function Bookings() {
 
                 return (
                   <div key={b.id} className="bookings-table-row">
-
-                    {/* Customer */}
                     <div className="bookings-td customer-cell">
                       <div
                         className="customer-avatar"
@@ -323,50 +294,35 @@ export default function Bookings() {
                         <div className="customer-phone">{b.phone}</div>
                       </div>
                     </div>
-
-                    {/* Service */}
                     <div className="bookings-td" style={{ fontSize: '0.875rem' }}>{b.service}</div>
-
-                    {/* Slot */}
                     <div className="bookings-td">
                       <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{slot.date}</div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{slot.time}</div>
                     </div>
-
-                    {/* Booking ID */}
                     <div className="bookings-td">
                       <span style={{ fontFamily: 'monospace', fontWeight: '600', fontSize: '0.8rem', color: '#2563eb' }}>
                         {b.trackingId}
                       </span>
                     </div>
-
-                    {/* Status */}
                     <div className="bookings-td">
                       <span style={{ backgroundColor: statusStyle.bg, color: statusStyle.color, padding: '3px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '600', whiteSpace: 'nowrap' }}>
                         {statusStyle.label}
                       </span>
                     </div>
-
                   </div>
                 );
               })}
             </div>
 
-            {/* ── Pagination ── */}
             <div className="bookings-pagination">
               <div className="pagination-info">
                 Showing {paginated.length} of {filtered.length} bookings
                 {filtered.length !== bookings.length && ` (filtered from ${bookings.length})`}
               </div>
               <div className="pagination-controls">
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
+                <button className="pagination-btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
                   <ChevronLeft size={15} />
                 </button>
-
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
                   .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
                   .reduce((acc, p, idx, arr) => {
@@ -378,26 +334,16 @@ export default function Bookings() {
                     p === '...' ? (
                       <span key={`dots-${i}`} className="pagination-dots">...</span>
                     ) : (
-                      <button
-                        key={p}
-                        className={`pagination-btn ${page === p ? 'active' : ''}`}
-                        onClick={() => setPage(p)}
-                      >
+                      <button key={p} className={`pagination-btn ${page === p ? 'active' : ''}`} onClick={() => setPage(p)}>
                         {p}
                       </button>
                     )
                   )}
-
-                <button
-                  className="pagination-btn"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
+                <button className="pagination-btn" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
                   <ChevronRight size={15} />
                 </button>
               </div>
             </div>
-
           </div>
         )}
       </main>

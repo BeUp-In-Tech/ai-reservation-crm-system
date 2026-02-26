@@ -7,13 +7,13 @@ import Cookies from "js-cookie";
 
 // ── Axios instance ─────────────────────────────────────────────────────────
 const api = axios.create({
-  baseURL: "",
+  baseURL: import.meta?.env?.VITE_API_BASE_URL || "https://reservation-xynh.onrender.com",
   withCredentials: true,
   headers: { "Content-Type": "application/json", Accept: "application/json" },
 });
 
 api.interceptors.request.use((config) => {
-  const token = Cookies.get("access_token");
+  const token = Cookies.get("access_token") || localStorage.getItem("access_token");
   if (token) config.headers["Authorization"] = `Bearer ${token}`;
   return config;
 });
@@ -52,12 +52,10 @@ const STANDARD_TYPES = ["Health Clinic", "Dental Clinic", "Restaurant", "Salon",
 const AddBusinessPage = () => {
   const navigate = useNavigate();
 
-  // Business list state
   const [businessCards, setBusinessCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Add-form state
   const [businessName, setBusinessName] = useState("");
   const [slug, setSlug] = useState("");
   const [businessDescription, setBusinessDescription] = useState("");
@@ -74,29 +72,24 @@ const AddBusinessPage = () => {
   const [otherService, setOtherService] = useState("");
   const [customServices, setCustomServices] = useState([]);
 
-  // cardServices: { [business_id]: [{id, name}] }
   const [cardServices, setCardServices] = useState({});
   const [newServiceInputs, setNewServiceInputs] = useState({});
   const [svcLoading, setSvcLoading] = useState({});
   const [svcError, setSvcError] = useState({});
 
-  // Local services during business creation
   const [formServices, setFormServices] = useState([]);
   const [newFormService, setNewFormService] = useState("");
 
-  // Edit state
   const [editingCardId, setEditingCardId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [editPendingAdd, setEditPendingAdd] = useState([]);
   const [editPendingDelete, setEditPendingDelete] = useState([]);
 
-  // ── Fetch all businesses on mount ────────────────────────────────────────
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
         const res = await api.get("/api/v1/admin/businesses/");
         const list = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
-
         setBusinessCards(list);
 
         const extras = list
@@ -127,11 +120,9 @@ const AddBusinessPage = () => {
         setLoading(false);
       }
     };
-
     fetchBusinesses();
   }, []);
 
-  // ── Edit helpers ─────────────────────────────────────────────────────────
   const handleEdit = (business) => {
     setEditingCardId(business.id);
     setEditFormData({
@@ -163,23 +154,17 @@ const AddBusinessPage = () => {
   const handleEditFieldChange = (field, value) =>
     setEditFormData((prev) => ({ ...prev, [field]: value }));
 
-  // ── Stage a service addition in edit mode ────────────────────────────────
   const handleAddServiceToCard = (business_id) => {
     const newServiceName = newServiceInputs[business_id]?.trim();
     if (!newServiceName) return;
-
     const existing = cardServices[business_id] || [];
     const alreadyPending = editPendingAdd.some(
       (s) => s.service_name.toLowerCase() === newServiceName.toLowerCase()
     );
-    if (
-      existing.some((s) => s.name.toLowerCase() === newServiceName.toLowerCase()) ||
-      alreadyPending
-    ) {
+    if (existing.some((s) => s.name.toLowerCase() === newServiceName.toLowerCase()) || alreadyPending) {
       setSvcError((prev) => ({ ...prev, [business_id]: "This service already exists." }));
       return;
     }
-
     const tempId = `temp_${Date.now()}`;
     setCardServices((prev) => ({
       ...prev,
@@ -190,15 +175,12 @@ const AddBusinessPage = () => {
     setSvcError((prev) => ({ ...prev, [business_id]: null }));
   };
 
-  // ── Stage a service deletion in edit mode ─────────────────────────────────
   const handleRemoveServiceFromCard = (business_id, service) => {
     if (!window.confirm(`Remove "${service.name}"?`)) return;
-
     setCardServices((prev) => ({
       ...prev,
       [business_id]: (prev[business_id] || []).filter((s) => s.id !== service.id),
     }));
-
     if (service.id.startsWith("temp_")) {
       setEditPendingAdd((prev) => prev.filter((s) => s._tempId !== service.id));
     } else {
@@ -211,11 +193,9 @@ const AddBusinessPage = () => {
     setSvcError((prev) => ({ ...prev, [business_id]: null }));
   };
 
-  // ── Update business ───────────────────────────────────────────────────────
   const handleUpdateBusiness = async (business_id) => {
     setSvcLoading((prev) => ({ ...prev, [business_id]: true }));
     setError("");
-
     const payload = {
       business_name: editFormData.business_name?.trim() || undefined,
       description: editFormData.description?.trim() || null,
@@ -229,22 +209,13 @@ const AddBusinessPage = () => {
       zip_code: editFormData.zip_code?.trim() || null,
       country: editFormData.country || "USA",
       timezone: editFormData.timezone || "UTC",
-      add_services: editPendingAdd.length > 0
-        ? editPendingAdd.map(({ service_name }) => ({ service_name }))
-        : null,
-      delete_service_ids: editPendingDelete.length > 0
-        ? editPendingDelete
-        : null,
+      add_services: editPendingAdd.length > 0 ? editPendingAdd.map(({ service_name }) => ({ service_name })) : null,
+      delete_service_ids: editPendingDelete.length > 0 ? editPendingDelete : null,
     };
-
     try {
       const res = await api.patch(`/api/v1/admin/businesses/${business_id}`, payload);
       const updated = res.data?.data ?? res.data;
-
-      setBusinessCards((prev) =>
-        prev.map((b) => (b.id === business_id ? { ...b, ...updated } : b))
-      );
-
+      setBusinessCards((prev) => prev.map((b) => (b.id === business_id ? { ...b, ...updated } : b)));
       try {
         const sRes = await api.get(`/api/v1/admin/businesses/${business_id}/services`);
         const sRaw = sRes.data?.data ?? sRes.data ?? [];
@@ -254,10 +225,7 @@ const AddBusinessPage = () => {
             ? sRaw.map((s) => ({ id: String(s.id ?? s._id ?? ""), name: s.name ?? s.service_name ?? s }))
             : [],
         }));
-      } catch {
-        // Non-critical
-      }
-
+      } catch { /* non-critical */ }
       setEditingCardId(null);
       setEditFormData({});
       setEditPendingAdd([]);
@@ -269,7 +237,6 @@ const AddBusinessPage = () => {
     }
   };
 
-  // ── Delete business ──────────────────────────────────────────────────────
   const handleDeleteBusiness = async (business_id) => {
     if (!window.confirm("Are you sure you want to delete this business?")) return;
     try {
@@ -281,12 +248,10 @@ const AddBusinessPage = () => {
     }
   };
 
-  // ── Add new business ─────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     const newCard = Object.fromEntries(
       Object.entries({
         business_name: businessName.trim(),
@@ -302,21 +267,17 @@ const AddBusinessPage = () => {
         zip_code: zipCode.trim(),
       }).filter(([, v]) => v !== "")
     );
-
     try {
       const res = await api.post("/api/v1/admin/businesses/", newCard);
       const created = res.data?.data ?? res.data;
-
       setBusinessCards((prev) => [created, ...prev]);
       setCardServices((prev) => ({ ...prev, [created.id]: [] }));
-
       if (formServices.length > 0) {
         try {
           await api.patch(`/api/v1/admin/businesses/${created.id}`, {
             add_services: formServices.map((s) => ({ service_name: s })),
             delete_service_ids: null,
           });
-
           const sRes = await api.get(`/api/v1/admin/businesses/${created.id}/services`);
           const sRaw = sRes.data?.data ?? sRes.data ?? [];
           setCardServices((prev) => ({
@@ -329,8 +290,6 @@ const AddBusinessPage = () => {
           console.error("Non-critical: services failed to save", svcErr);
         }
       }
-
-      // Reset form
       setBusinessName(""); setSlug(""); setBusinessDescription("");
       setContactName(""); setEmail(""); setPhone("");
       setAddress(""); setCity(""); setState(""); setZipCode("");
@@ -363,7 +322,6 @@ const AddBusinessPage = () => {
     setFormServices((prev) => prev.filter((s) => s !== val));
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="add-business-container">
       <Sidebar />
@@ -376,7 +334,6 @@ const AddBusinessPage = () => {
         </header>
 
         <div className="page-stack">
-          {/* ── Business Cards ── */}
           <section className="business-cards-section">
             <h3 className="section-title">Businesses</h3>
             {loading && <p className="loading-text">Loading businesses...</p>}
@@ -393,11 +350,7 @@ const AddBusinessPage = () => {
                     <div className="card-actions">
                       {editingCardId === b.id ? (
                         <>
-                          <button
-                            className="card-btn"
-                            onClick={() => handleUpdateBusiness(b.id)}
-                            disabled={svcLoading[b.id]}
-                          >
+                          <button className="card-btn" onClick={() => handleUpdateBusiness(b.id)} disabled={svcLoading[b.id]}>
                             {svcLoading[b.id] ? "Saving…" : "Update"}
                           </button>
                           <button className="card-btn secondary" onClick={handleCancelEdit}>Cancel</button>
@@ -413,28 +366,14 @@ const AddBusinessPage = () => {
 
                   <div className="business-card-content">
                     {editingCardId === b.id ? (
-                      // ── EDIT MODE ──
                       <div className="business-card-edit">
                         <div className="edit-grid">
-                          <div className="edit-field">
-                            <label>Business Name</label>
-                            <input type="text" value={editFormData.business_name || ""} onChange={(e) => handleEditFieldChange("business_name", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Slug</label>
-                            <input type="text" value={editFormData.slug || ""} onChange={(e) => handleEditFieldChange("slug", e.target.value)} />
-                          </div>
-                          <div className="edit-field full">
-                            <label>Description</label>
-                            <textarea value={editFormData.description || ""} onChange={(e) => handleEditFieldChange("description", e.target.value)} />
-                          </div>
-
-                          {/* ── Services in Edit Mode ── */}
+                          <div className="edit-field"><label>Business Name</label><input type="text" value={editFormData.business_name || ""} onChange={(e) => handleEditFieldChange("business_name", e.target.value)} /></div>
+                          <div className="edit-field"><label>Slug</label><input type="text" value={editFormData.slug || ""} onChange={(e) => handleEditFieldChange("slug", e.target.value)} /></div>
+                          <div className="edit-field full"><label>Description</label><textarea value={editFormData.description || ""} onChange={(e) => handleEditFieldChange("description", e.target.value)} /></div>
                           <div className="edit-field full">
                             <label>Services</label>
-                            {svcError[b.id] && (
-                              <p className="svc-error-text">{svcError[b.id]}</p>
-                            )}
+                            {svcError[b.id] && <p className="svc-error-text">{svcError[b.id]}</p>}
                             {(editPendingAdd.length > 0 || editPendingDelete.length > 0) && (
                               <p className="svc-pending-hint" style={{ fontSize: "0.75rem", color: "#2563eb", marginBottom: "0.5rem" }}>
                                 {editPendingAdd.length > 0 && `${editPendingAdd.length} service(s) to add`}
@@ -445,87 +384,34 @@ const AddBusinessPage = () => {
                             )}
                             <div className="service-section">
                               <div className="service-input-wrapper">
-                                <input
-                                  type="text"
-                                  className="service-input"
-                                  placeholder="Add a service (e.g., Home Delivery)"
-                                  value={newServiceInputs[b.id] || ""}
-                                  onChange={(e) => handleServiceInputChange(b.id, e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") { e.preventDefault(); handleAddServiceToCard(b.id); }
-                                  }}
-                                />
-                                <button
-                                  className="add-service-btn"
-                                  onClick={() => handleAddServiceToCard(b.id)}
-                                  disabled={!newServiceInputs[b.id]?.trim()}
-                                >
-                                  Add
-                                </button>
+                                <input type="text" className="service-input" placeholder="Add a service" value={newServiceInputs[b.id] || ""} onChange={(e) => handleServiceInputChange(b.id, e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddServiceToCard(b.id); } }} />
+                                <button className="add-service-btn" onClick={() => handleAddServiceToCard(b.id)} disabled={!newServiceInputs[b.id]?.trim()}>Add</button>
                               </div>
                               <div className="service-chips">
-                                {(cardServices[b.id] || []).length > 0 ? (
-                                  (cardServices[b.id] || []).map((service) => (
-                                    <span
-                                      key={service.id}
-                                      className="chip chip-removable"
-                                      onClick={() => handleRemoveServiceFromCard(b.id, service)}
-                                      title="Click to remove"
-                                    >
+                                {(cardServices[b.id] || []).length > 0
+                                  ? (cardServices[b.id] || []).map((service) => (
+                                    <span key={service.id} className="chip chip-removable" onClick={() => handleRemoveServiceFromCard(b.id, service)} title="Click to remove">
                                       {service.name}
-                                      {service.id.startsWith("temp_") && (
-                                        <span style={{ fontSize: "0.65rem", color: "#2563eb", marginLeft: "2px" }}>new</span>
-                                      )}
+                                      {service.id.startsWith("temp_") && <span style={{ fontSize: "0.65rem", color: "#2563eb", marginLeft: "2px" }}>new</span>}
                                       <span className="chip-remove">×</span>
                                     </span>
                                   ))
-                                ) : (
-                                  <p className="no-services-text">No services added yet</p>
-                                )}
+                                  : <p className="no-services-text">No services added yet</p>}
                               </div>
                             </div>
                           </div>
-
-                          <div className="edit-field">
-                            <label>Contact Person</label>
-                            <input type="text" value={editFormData.contact_fullname || ""} onChange={(e) => handleEditFieldChange("contact_fullname", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Email</label>
-                            <input type="email" value={editFormData.contact_email || ""} onChange={(e) => handleEditFieldChange("contact_email", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Phone</label>
-                            <input type="tel" value={editFormData.contact_phone || ""} onChange={(e) => handleEditFieldChange("contact_phone", e.target.value)} />
-                          </div>
-                          <div className="edit-field full">
-                            <label>Street Address</label>
-                            <input type="text" value={editFormData.street_address || ""} onChange={(e) => handleEditFieldChange("street_address", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>City</label>
-                            <input type="text" value={editFormData.city || ""} onChange={(e) => handleEditFieldChange("city", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>State</label>
-                            <input type="text" value={editFormData.state || ""} onChange={(e) => handleEditFieldChange("state", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Zip Code</label>
-                            <input type="text" value={editFormData.zip_code || ""} onChange={(e) => handleEditFieldChange("zip_code", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Country</label>
-                            <input type="text" value={editFormData.country || ""} onChange={(e) => handleEditFieldChange("country", e.target.value)} />
-                          </div>
-                          <div className="edit-field">
-                            <label>Timezone</label>
-                            <input type="text" value={editFormData.timezone || ""} onChange={(e) => handleEditFieldChange("timezone", e.target.value)} />
-                          </div>
+                          <div className="edit-field"><label>Contact Person</label><input type="text" value={editFormData.contact_fullname || ""} onChange={(e) => handleEditFieldChange("contact_fullname", e.target.value)} /></div>
+                          <div className="edit-field"><label>Email</label><input type="email" value={editFormData.contact_email || ""} onChange={(e) => handleEditFieldChange("contact_email", e.target.value)} /></div>
+                          <div className="edit-field"><label>Phone</label><input type="tel" value={editFormData.contact_phone || ""} onChange={(e) => handleEditFieldChange("contact_phone", e.target.value)} /></div>
+                          <div className="edit-field full"><label>Street Address</label><input type="text" value={editFormData.street_address || ""} onChange={(e) => handleEditFieldChange("street_address", e.target.value)} /></div>
+                          <div className="edit-field"><label>City</label><input type="text" value={editFormData.city || ""} onChange={(e) => handleEditFieldChange("city", e.target.value)} /></div>
+                          <div className="edit-field"><label>State</label><input type="text" value={editFormData.state || ""} onChange={(e) => handleEditFieldChange("state", e.target.value)} /></div>
+                          <div className="edit-field"><label>Zip Code</label><input type="text" value={editFormData.zip_code || ""} onChange={(e) => handleEditFieldChange("zip_code", e.target.value)} /></div>
+                          <div className="edit-field"><label>Country</label><input type="text" value={editFormData.country || ""} onChange={(e) => handleEditFieldChange("country", e.target.value)} /></div>
+                          <div className="edit-field"><label>Timezone</label><input type="text" value={editFormData.timezone || ""} onChange={(e) => handleEditFieldChange("timezone", e.target.value)} /></div>
                         </div>
                       </div>
                     ) : (
-                      // ── VIEW MODE ──
                       <>
                         <p className="business-card-desc">{b.description}</p>
                         <div className="business-card-info">
@@ -534,17 +420,14 @@ const AddBusinessPage = () => {
                           <div className="info-row"><span className="info-label">Phone:</span><span className="info-value">{b.contact_phone}</span></div>
                           <div className="info-row"><span className="info-label">Address:</span><span className="info-value">{b.street_address}, {b.city}, {b.state} {b.zip_code}</span></div>
                         </div>
-
                         <div className="service-section-view">
                           <h4 className="services-title">Services</h4>
                           <div className="service-chips">
-                            {(cardServices[b.id] || []).length > 0 ? (
-                              (cardServices[b.id] || []).map((service) => (
+                            {(cardServices[b.id] || []).length > 0
+                              ? (cardServices[b.id] || []).map((service) => (
                                 <span key={service.id} className="chip chip-view">{service.name}</span>
                               ))
-                            ) : (
-                              <p className="no-services-text">No services available</p>
-                            )}
+                              : <p className="no-services-text">No services available</p>}
                           </div>
                         </div>
                       </>
@@ -555,121 +438,55 @@ const AddBusinessPage = () => {
             </div>
           </section>
 
-          {/* ── Add Business Form ── */}
           <section className="form-section">
             <div className="form-card">
               <h3 className="section-title">Business Information</h3>
               <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Business Name *</label>
-                  <input type="text" value={businessName} onChange={(e) => { setBusinessName(e.target.value); setSlug(generateSlug(e.target.value)); }} placeholder="e.g., Downtown Health Clinic" required />
-                </div>
-                <div className="form-group">
-                  <label>Slug *</label>
-                  <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="e.g., downtown-health-clinic" required />
-                  <small style={{ color: "#6b7280", fontSize: "0.75rem" }}>Auto-generated from business name. Must be unique.</small>
-                </div>
-                <div className="form-group">
-                  <label>Description *</label>
-                  <textarea value={businessDescription} onChange={(e) => setBusinessDescription(e.target.value)} placeholder="About your business" required />
-                </div>
+                <div className="form-group"><label>Business Name *</label><input type="text" value={businessName} onChange={(e) => { setBusinessName(e.target.value); setSlug(generateSlug(e.target.value)); }} placeholder="e.g., Downtown Health Clinic" required /></div>
+                <div className="form-group"><label>Slug *</label><input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="e.g., downtown-health-clinic" required /><small style={{ color: "#6b7280", fontSize: "0.75rem" }}>Auto-generated. Must be unique.</small></div>
+                <div className="form-group"><label>Description *</label><textarea value={businessDescription} onChange={(e) => setBusinessDescription(e.target.value)} placeholder="About your business" required /></div>
                 <div className="form-group">
                   <label>Service Type *</label>
                   <select value={businessType} onChange={(e) => setBusinessType(e.target.value)} required>
                     <option value="">Select a service type...</option>
-                    {STANDARD_TYPES.map((type) => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
+                    {STANDARD_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
                     <option value="Others (custom)">Others (custom)</option>
-                    {customServices.map((type) => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
+                    {customServices.map((type) => <option key={type} value={type}>{type}</option>)}
                   </select>
                 </div>
-
                 {businessType === "Others (custom)" && (
                   <div className="form-group">
                     <label>Custom Service Type</label>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <input
-                        type="text"
-                        value={otherService}
-                        onChange={(e) => setOtherService(e.target.value)}
-                        placeholder="Enter custom service type"
-                      />
-                      <button type="button" onClick={handleAddCustomService} disabled={!otherService.trim()}>
-                        Add Type
-                      </button>
+                      <input type="text" value={otherService} onChange={(e) => setOtherService(e.target.value)} placeholder="Enter custom service type" />
+                      <button type="button" onClick={handleAddCustomService} disabled={!otherService.trim()}>Add Type</button>
                     </div>
                   </div>
                 )}
-
                 <div className="service-section">
                   <h4 className="section-title-small" style={{ color: "black", marginBottom: "1rem" }}>Services</h4>
                   <div className="service-input-wrapper">
-                    <input
-                      type="text"
-                      className="service-input"
-                      placeholder="Add a service (e.g., Home Delivery)"
-                      value={newFormService}
-                      onChange={(e) => setNewFormService(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddFormService(); } }}
-                    />
-                    <button type="button" className="add-service-btn" onClick={handleAddFormService} disabled={!newFormService.trim()}>
-                      Add
-                    </button>
+                    <input type="text" className="service-input" placeholder="Add a service" value={newFormService} onChange={(e) => setNewFormService(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddFormService(); } }} />
+                    <button type="button" className="add-service-btn" onClick={handleAddFormService} disabled={!newFormService.trim()}>Add</button>
                   </div>
                   <div className="service-chips">
                     {formServices.map((s) => (
-                      <span key={s} className="chip chip-removable" onClick={() => handleRemoveFormService(s)} title="Click to remove">
-                        {s} <span className="chip-remove">×</span>
-                      </span>
+                      <span key={s} className="chip chip-removable" onClick={() => handleRemoveFormService(s)} title="Click to remove">{s} <span className="chip-remove">×</span></span>
                     ))}
                   </div>
                 </div>
-
-                <div className="form-group">
-                  <label>Contact Name *</label>
-                  <input type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Full Name" required />
-                </div>
-                <div className="form-group">
-                  <label>Email *</label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="business@example.com" required />
-                </div>
-                <div className="form-group">
-                  <label>Phone *</label>
-                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 000-0000" required />
-                </div>
-                <div className="form-group">
-                  <label>Street Address *</label>
-                  <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main Street" required />
-                </div>
-                <div className="form-group">
-                  <label>City *</label>
-                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" required />
-                </div>
-                <div className="form-group">
-                  <label>State *</label>
-                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" required />
-                </div>
-                <div className="form-group">
-                  <label>Zip Code *</label>
-                  <input type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="12345" required />
-                </div>
-                <div className="form-group">
-                  <label>Country *</label>
-                  <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" required />
-                </div>
-                <div className="form-group">
-                  <label>Timezone *</label>
-                  <input type="text" value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="UTC" required />
-                </div>
-
+                <div className="form-group"><label>Contact Name *</label><input type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Full Name" required /></div>
+                <div className="form-group"><label>Email *</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="business@example.com" required /></div>
+                <div className="form-group"><label>Phone *</label><input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+8801712345678" required /></div>
+                <div className="form-group"><label>Street Address *</label><input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main Street" required /></div>
+                <div className="form-group"><label>City *</label><input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" required /></div>
+                <div className="form-group"><label>State *</label><input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="State" required /></div>
+                <div className="form-group"><label>Zip Code *</label><input type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="12345" required /></div>
+                <div className="form-group"><label>Country *</label><input type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" required /></div>
+                <div className="form-group"><label>Timezone *</label><input type="text" value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="UTC" required /></div>
                 <div className="footer-buttons">
                   <button className="cancel-btn" type="button" onClick={() => navigate("/adminBooking")}>Cancel</button>
-                  <button className="submit-btn" type="submit" disabled={loading}>
-                    {loading ? "Adding Business..." : "Add Business"}
-                  </button>
+                  <button className="submit-btn" type="submit" disabled={loading}>{loading ? "Adding Business..." : "Add Business"}</button>
                 </div>
               </form>
             </div>
