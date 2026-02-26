@@ -4,6 +4,15 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import '../assets/styles/login.css';
 
+const api = axios.create({
+    baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    },
+});
+
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,54 +20,28 @@ const AdminLogin = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const api = axios.create({
-        baseURL: '',
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-    });
-
-    const getAccessTokenFromCookies = () => Cookies.get('access_token');
-
     useEffect(() => {
-        const token = getAccessTokenFromCookies();
+        const token = Cookies.get('access_token') || localStorage.getItem('access_token');
         if (token) {
             navigate('/adminDashboard');
         }
     }, [navigate]);
 
-    // Client-side validation before hitting the API
     const validate = () => {
-        if (!email.trim()) {
-            setError('Please enter your email or username.');
-            return false;
-        }
-        if (!password) {
-            setError('Please enter your password.');
-            return false;
-        }
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters.');
-            return false;
-        }
+        if (!email.trim()) { setError('Please enter your email or username.'); return false; }
+        if (!password)     { setError('Please enter your password.'); return false; }
+        if (password.length < 6) { setError('Password must be at least 6 characters.'); return false; }
         return true;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-
         if (!validate()) return;
-
         setLoading(true);
 
         try {
-            const response = await api.post('/api/v1/admin/auth/login', {
-                email,
-                password,
-            });
+            const response = await api.post('/api/v1/admin/auth/login', { email, password });
 
             const token =
                 response?.data?.token ||
@@ -72,10 +55,11 @@ const AdminLogin = () => {
                 throw new Error('Login succeeded but no token was returned by the server.');
             }
 
+            // Save to both cookie AND localStorage so cross-domain requests work
             Cookies.set('access_token', token, {
                 expires: 1,
-                sameSite: 'strict',
-                secure: window.location.protocol === 'https:',
+                sameSite: 'Lax',   // ← was 'strict' which blocks cross-site reads
+                secure: true,
             });
             localStorage.setItem('access_token', token);
 
@@ -85,9 +69,9 @@ const AdminLogin = () => {
                 err?.response?.status === 401
                     ? 'Invalid email or password. Please try again.'
                     : err?.response?.data?.message ||
-                    err?.response?.data?.error ||
-                    err?.message ||
-                    'Login failed. Please check your credentials and try again.';
+                      err?.response?.data?.error ||
+                      err?.message ||
+                      'Login failed. Please check your credentials and try again.';
             setError(message);
         } finally {
             setLoading(false);
@@ -99,16 +83,11 @@ const AdminLogin = () => {
             <div className="admin-login-container">
                 <h2 className="login-title">Admin Login</h2>
 
-                {/* Error Alert */}
                 {error && (
                     <div className="alert alert-error" role="alert">
                         <span className="alert-icon">&#9888;</span>
                         <span className="alert-text">{error}</span>
-                        <button
-                            className="alert-close"
-                            onClick={() => setError(null)}
-                            aria-label="Dismiss error"
-                        >
+                        <button className="alert-close" onClick={() => setError(null)} aria-label="Dismiss error">
                             &times;
                         </button>
                     </div>
@@ -122,10 +101,7 @@ const AdminLogin = () => {
                             id="username"
                             placeholder="Enter your username"
                             value={email}
-                            onChange={(e) => {
-                                setEmail(e.target.value);
-                                if (error) setError(null);
-                            }}
+                            onChange={(e) => { setEmail(e.target.value); if (error) setError(null); }}
                             required
                         />
                     </div>
@@ -136,21 +112,12 @@ const AdminLogin = () => {
                             id="password"
                             placeholder="Enter your password"
                             value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                if (error) setError(null);
-                            }}
+                            onChange={(e) => { setPassword(e.target.value); if (error) setError(null); }}
                             required
                         />
                     </div>
                     <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? (
-                            <>
-                                <span className="spinner" /> Logging in...
-                            </>
-                        ) : (
-                            'Login'
-                        )}
+                        {loading ? <><span className="spinner" /> Logging in...</> : 'Login'}
                     </button>
                     <Link to="/forgot-password" className="forgot-password-link">
                         Forgot Password?

@@ -27,18 +27,18 @@ function App() {
           <Route path="/customerservices" element={<CustomerServices />} />
           <Route path="/customerservice" element={<CustomerService />} />
           <Route path="/paymentsystem" element={<BookingPayment />} />
-          <Route path="/adminDashboard" element={<AdminDashboard />} />
-          <Route path="/adminBooking" element={<AdminBooking />} />
-          <Route path="/aiconfiguration" element={<AdminConfiguration />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/addbusiness" element={<AddBusiness />} />
-          <Route path="/adminlogin" element={<AdminLogin />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/adminDashboard/*" element={<AdminDashboard />} />
+          <Route path="/adminBooking/*" element={<AdminBooking />} />
+          <Route path="/aiconfiguration/*" element={<AdminConfiguration />} />
+          <Route path="/analytics/*" element={<Analytics />} />
+          <Route path="/settings/*" element={<Settings />} />
+          <Route path="/addbusiness/*" element={<AddBusiness />} />
+          <Route path="/adminlogin/*" element={<AdminLogin />} />
+          <Route path="/login/*" element={<Login />} />
+          <Route path="/forgot-password/*" element={<ForgotPassword />} />
+          <Route path="/reset-password/*" element={<ResetPassword />} />
+          <Route path="/profile/*" element={<Profile />} />
+          <Route path="/change-password/*" element={<ChangePassword />} />
         </Routes>
       </Router>
     </PlatformProvider>
