@@ -52,6 +52,7 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('access_token');
     Cookies.remove('access_token');
     navigate('/');
   };
