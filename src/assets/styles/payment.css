@@ -202,6 +202,7 @@ body {
 .reservation-subtitle {
   font-size: 0.875rem;
   color: #6b7280;
+  text-align: left;
 }
 
 /* Booking Info Grid */
@@ -325,6 +326,7 @@ body {
   font-size: 0.8rem;
   color: #1e40af;
   line-height: 1.5;
+  text-align: left;
 }
 
 /* Right Column - Payment */

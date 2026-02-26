@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import {
   LayoutDashboard,
   Calendar,
@@ -7,10 +8,12 @@ import {
   TrendingUp,
   LogOut,
   Sliders,
-  Briefcase
+  Briefcase,
+  User
 } from 'lucide-react';
 import '../assets/styles/sidebar.css';
 import logo from '../assets/logo.png.png';
+import { usePlatform } from '../pages/platformContext';
 
 // Map menu names to their routes
 const menuRoutes = {
@@ -18,8 +21,9 @@ const menuRoutes = {
   'Bookings': '/adminBooking',
   'Manage Business': '/addBusiness',
   'AI Configuration': '/aiconfiguration',
-  'Analytics': '/analytics', // Update this when Analytics page is created
-  'Settings': '/settings',   // Update this when Settings page is created
+  'Analytics': '/analytics',
+  'Settings': '/settings',
+  'Change Password': '/change-password',
   'Profile': '/profile'
 };
 
@@ -31,24 +35,24 @@ const routeToMenu = {
   '/aiconfiguration': 'AI Configuration',
   '/analytics': 'Analytics',
   '/settings': 'Settings',
+  '/change-password': 'Change Password',
   '/profile': 'Profile'
 };
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { platformName } = usePlatform();
 
-  // Determine active menu based on current route
   const activeMenu = routeToMenu[location.pathname] || 'Dashboard';
 
   const handleMenuClick = (menuName) => {
     const route = menuRoutes[menuName];
-    if (route) {
-      navigate(route);
-    }
+    if (route) navigate(route);
   };
 
   const handleLogout = () => {
+    Cookies.remove('access_token');
     navigate('/');
   };
 
@@ -60,7 +64,8 @@ const Sidebar = () => {
             <img src={logo} alt="Logo" className="logo-image" />
           </div>
           <div className="sidebar-logo-text">
-            <div className="sidebar-logo-title">AI Reservation & CRM System</div>
+            {/* ── Platform name from context — updates everywhere instantly ── */}
+            <div className="sidebar-logo-title">{platformName}</div>
             <div className="sidebar-logo-subtitle">ADMIN CONSOLE</div>
           </div>
         </div>
@@ -72,7 +77,7 @@ const Sidebar = () => {
           onClick={() => handleMenuClick('Dashboard')}
         >
           <LayoutDashboard className="menu-icon" />
-          <span>Dashboard</span>
+          <span>Dashboard Analytics</span>
         </button>
         <button
           className={`menu-item ${activeMenu === 'Bookings' ? 'active' : ''}`}
@@ -94,20 +99,6 @@ const Sidebar = () => {
         >
           <Sliders className="menu-icon" />
           <span>AI Configuration</span>
-        </button>
-        <button
-          className={`menu-item ${activeMenu === 'Analytics' ? 'active' : ''}`}
-          onClick={() => handleMenuClick('Analytics')}
-        >
-          <TrendingUp className="menu-icon" />
-          <span>Analytics</span>
-        </button>
-        <button
-          className={`menu-item ${activeMenu === 'Settings' ? 'active' : ''}`}
-          onClick={() => handleMenuClick('Settings')}
-        >
-          <Settings className="menu-icon" />
-          <span>Settings</span>
         </button>
       </nav>
 

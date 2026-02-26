@@ -358,6 +358,7 @@ body {
   outline: none;
   background-color: white;
   transition: all 0.2s;
+  color: #111827;
 }
 
 .bookings-search-input:focus {

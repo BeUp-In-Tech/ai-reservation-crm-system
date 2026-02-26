@@ -1,84 +1,205 @@
-import React, { useState, useRef } from 'react';
-import { Search, Clock, DollarSign, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Clock, DollarSign, MapPin, AlertCircle, CheckCircle } from 'lucide-react';
 import '../assets/styles/customer.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Robot from '../assets/Rectangle 6.png';
+import axios from 'axios';
 
-export default function AIReservationCRM() {
-  const [activeTab, setActiveTab] = useState('All Services'); // Track active tab
-  const [searchQuery, setSearchQuery] = useState('');
+// ── Axios instance ─────────────────────────────────────────────────────────
+const api = axios.create({
+  baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+});
 
-  const tabs = ['All Services', 'Consultation', 'Treatments', 'Emergency', 'Virtual Care'];
+// ── Response normalizer ────────────────────────────────────────────────────
+const normalizeServices = (data) => {
+  const list = Array.isArray(data)
+    ? data
+    : data?.data ?? data?.services ?? data?.results ?? [];
 
-  const services = [
-    {
-      id: 1,
-      title: 'Comprehensive Dental Checkup',
-      description: 'Full oral examination including deep cleaning, X-rays and personalized treatment plan.',
-      duration: '45 Minutes',
-      price: '$85.53',
-      location: 'Main Clinic, 3rd floor',
-      badge: 'MOST POPULAR',
-      category: 'Consultation'
-    },
-    {
-      id: 2,
-      title: 'Personal Training Session',
-      description: 'One-on-one fitness training to help you achieve your health and wellness goals.',
-      duration: '60 Minutes',
-      price: '$94.55',
-      location: 'East Wing Studio',
-      category: 'Treatments'
-    },
-    {
-      id: 3,
-      title: "Chef's Table Reservation",
-      description: 'Exclusive dining experience with a curated menu crafted by our executive chef.',
-      duration: '120 Minutes',
-      price: 'Free Reservation',
-      location: 'Main Dining Hall',
-      category: 'Emergency'  // This could be adjusted as per the category
-    },
-    {
-      id: 4,
-      title: 'Virtual Health Consult',
-      description: 'Connect with healthcare experts right from your home via video consultation.',
-      duration: '30 Minutes',
-      price: '$42.99',
-      location: 'Remote / Video',
-      category: 'Virtual Care'
-    },
-    {
-      id: 5,
-      title: 'Deep Tissue Massage',
-      description: 'Therapeutic massage targeting muscle tension and stress relief for ultimate relaxation.',
-      duration: '90 Minutes',
-      price: '$110.00',
-      location: 'Wellness Suite 1',
-      category: 'Consultation'  // Adjust category as needed
+  return list.map((item, i) => ({
+    id: item.id ?? item._id ?? i,
+    title: item.business_name ?? item.title ?? item.name ?? item.service_name ?? 'Untitled Service',
+    description: item.description ?? item.desc ?? '',
+    duration: item.duration ?? (item.duration_minutes ? `${item.duration_minutes} Minutes` : ''),
+    price: item.price != null
+      ? (typeof item.price === 'number' ? `$${item.price.toFixed(2)}` : item.price)
+      : item.is_free ? 'Free Reservation' : '',
+    location: item.location ?? item.address ?? item.venue ?? '',
+    badge: item.badge ?? item.tag ?? (item.is_popular ? 'MOST POPULAR' : null),
+    category: item.category ?? item.service_type ?? 'All Services',
+    business_slug: item.business_slug ?? item.slug ?? null,
+  }));
+};
+
+const TABS = ['All Services'];
+
+// ── Payment Success Toast ──────────────────────────────────────────────────
+function PaymentSuccessToast({ bookingId, onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 7000);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div style={{
+      position: 'fixed', top: '1.5rem', left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 9999,
+      background: '#f0fdf4', border: '1.5px solid #86efac',
+      borderRadius: '14px', padding: '1rem 1.5rem',
+      boxShadow: '0 8px 32px rgba(34,197,94,0.18)',
+      display: 'flex', alignItems: 'center', gap: '0.875rem',
+      minWidth: '300px', maxWidth: '90vw',
+      animation: 'slideDown 0.35s cubic-bezier(.4,0,.2,1)',
+    }}>
+      <div style={{
+        width: '36px', height: '36px', borderRadius: '50%',
+        background: '#22c55e', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', flexShrink: 0,
+      }}>
+        <CheckCircle size={20} color="white" />
+      </div>
+      <div style={{ flex: 1 }}>
+        <p style={{ margin: 0, fontWeight: '700', color: '#15803d', fontSize: '0.95rem' }}>
+          Payment Successful! 🎉
+        </p>
+        {bookingId && (
+          <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#166534' }}>
+            Booking ID: <strong>{bookingId}</strong>
+          </p>
+        )}
+      </div>
+      <button onClick={onDismiss} style={{
+        background: 'none', border: 'none', cursor: 'pointer',
+        color: '#86efac', fontSize: '1.2rem', lineHeight: 1, padding: 0,
+      }}>×</button>
+    </div>
+  );
+}
+
+// Inject keyframe once
+if (!document.getElementById('customer-keyframes')) {
+  const s = document.createElement('style');
+  s.id = 'customer-keyframes';
+  s.textContent = `
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
-  ];
+  `;
+  document.head.appendChild(s);
+}
+
+// ── Component ──────────────────────────────────────────────────────────────
+export default function AIReservationCRM() {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('All Services');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ── Detect Stripe success redirect ────────────────────────────────────
+  // Your backend success_url should be:
+  //   https://YOUR-FRONTEND.com/?payment=success&booking_id={BOOKING_ID}
+  // OR: https://YOUR-FRONTEND.com/customerservice/{slug}?payment=success&booking_id={id}
+  const searchParams = new URLSearchParams(location.search);
+  const paymentStatus = searchParams.get('payment');
+  const returnBookingId = searchParams.get('booking_id');
+
+  const [showSuccessToast, setShowSuccessToast] = useState(paymentStatus === 'success');
+
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      // Clean up the URL so refresh doesn't re-trigger the toast
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   const servicesGridRef = useRef(null);
 
-  // Filter services based on the active tab and search query
+  // ── Fetch ALL services ────────────────────────────────────────────────
+  useEffect(() => {
+    const fetchServices = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const params = {};
+        if (activeTab !== 'All Services') params.category = activeTab;
+        if (searchQuery) params.search = searchQuery;
+
+        const res = await api.get('/api/v1/public/', { params });
+        const list = normalizeServices(res.data);
+        setServices(list);
+      } catch (err) {
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.message ?? err?.response?.data?.error;
+        if (!err.response) {
+          setError('Network error — cannot reach the server.');
+        } else if (status === 404) {
+          setError(null);
+        } else {
+          setError(msg ?? `Error ${status} loading services.`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, [activeTab, searchQuery]);
+
+  // ── Filter logic ──────────────────────────────────────────────────────
   const filteredServices = services.filter((service) => {
     const matchesTab = activeTab === 'All Services' || service.category === activeTab;
-    const matchesSearch = service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      !searchQuery ||
+      service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       service.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
-  const handleViewAllBookingsClick = () => {
-    servicesGridRef.current.scrollIntoView({ behavior: 'smooth' });
+  const handleExploreClick = () => {
+    servicesGridRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // ── Skeleton card ─────────────────────────────────────────────────────
+  const SkeletonCard = () => (
+    <div className="service-card service-card--skeleton">
+      <div className="service-content">
+        <div className="skel skel-badge" />
+        <div className="skel skel-title" />
+        <div className="skel skel-desc" />
+        <div className="skel skel-desc skel-desc--short" />
+        <div className="service-details" style={{ gap: '0.5rem', flexDirection: 'column' }}>
+          <div className="skel skel-detail" />
+          <div className="skel skel-detail" />
+          <div className="skel skel-detail" />
+        </div>
+        <div className="skel skel-btn" />
+      </div>
+    </div>
+  );
+
+  // ── Render ────────────────────────────────────────────────────────────
   return (
     <div className="ai-reservation-container">
+
+      {/* Payment success toast */}
+      {showSuccessToast && (
+        <PaymentSuccessToast
+          bookingId={returnBookingId}
+          onDismiss={() => setShowSuccessToast(false)}
+        />
+      )}
+
       <Header showThemeToggle={false} myBookingsText="My Booking" />
+
       <div className="main-wrapper">
-        {/* Hero Section */}
+
+        {/* ── Hero ── */}
         <div className="hero-section">
           <div className="hero-grid">
             <div className="hero-illustration">
@@ -90,9 +211,7 @@ export default function AIReservationCRM() {
             </div>
 
             <div className="hero-text">
-              <div className="instant-badge">
-                INSTANT CONFIRMATIONS
-              </div>
+              <div className="instant-badge">INSTANT CONFIRMATIONS</div>
               <h1 className="hero-title">
                 Seamless care,{' '}
                 <span className="hero-highlight">one click away.</span>
@@ -100,10 +219,7 @@ export default function AIReservationCRM() {
               <p className="hero-description">
                 Fast, automated booking powered by our AI receptionist. Select a service below to get started.
               </p>
-              <button
-                className="view-bookings-btn"
-                onClick={handleViewAllBookingsClick} // Add click handler here
-              >
+              <button className="view-bookings-btn" onClick={handleExploreClick}>
                 Explore Services
                 <span>↓</span>
               </button>
@@ -111,9 +227,30 @@ export default function AIReservationCRM() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="search-section" ref={servicesGridRef}>
-          <div className="search-wrapper">
+        {/* ── Error banner ── */}
+        {error && (
+          <div className="customer-error-banner">
+            <AlertCircle size={15} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* ── Search ── */}
+        <div
+          className="tabs-section"
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.5rem 0' }}
+          ref={servicesGridRef}
+        >
+          <div
+            className="search-wrapper"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '50%',         // ← 50% of page
+              minWidth: '280px',    // ← safe on mobile
+              maxWidth: '640px',    // ← don't go too wide on ultrawide
+            }}
+          >
             <Search className="search-icon" />
             <input
               type="text"
@@ -125,94 +262,67 @@ export default function AIReservationCRM() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="tabs-container">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`tab-button ${activeTab === tab ? 'tab-active' : ''}`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Services Grid */}
+        {/* ── Services grid ── */}
         <div className="services-grid">
-          {filteredServices.map((service) => (
-            <div key={service.id} className="service-card">
-              <div className="service-content">
-                <div className="service-header">
-                  <div className="service-icon">{service.icon}</div>
-                  {service.badge && (
-                    <span className="service-badge">
-                      {service.badge}
-                    </span>
-                  )}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+            : filteredServices.length === 0
+              ? (
+                <div className="customer-empty">
+                  <p>No services found{searchQuery ? ` for "${searchQuery}"` : ''}.</p>
                 </div>
+              )
+              : filteredServices.map((service) => (
+                <div key={service.id} className="service-card">
+                  <div className="service-content">
+                    <div className="service-header">
+                      {service.badge && (
+                        <span className="service-badge">{service.badge}</span>
+                      )}
+                    </div>
 
-                <h3 className="service-title">{service.title}</h3>
-                <p className="service-description">{service.description}</p>
+                    <h3 className="service-title">{service.title}</h3>
+                    <p className="service-description">{service.description}</p>
 
-                <div className="service-details">
-                  <div className="service-detail-item">
-                    <Clock className="detail-icon" />
-                    <span>{service.duration}</span>
-                  </div>
-                  <div className="service-detail-item">
-                    <DollarSign className="detail-icon" />
-                    <span className="price-text">{service.price}</span>
-                  </div>
-                  <div className="service-detail-item">
-                    <MapPin className="detail-icon" />
-                    <span>{service.location}</span>
+                    <div className="service-details">
+                      {service.duration && (
+                        <div className="service-detail-item">
+                          <Clock className="detail-icon" />
+                          <span>{service.duration}</span>
+                        </div>
+                      )}
+                      {service.price && (
+                        <div className="service-detail-item">
+                          <DollarSign className="detail-icon" />
+                          <span className="price-text">{service.price}</span>
+                        </div>
+                      )}
+                      {service.location && (
+                        <div className="service-detail-item">
+                          <MapPin className="detail-icon" />
+                          <span>{service.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {service.business_slug ? (
+                      <Link
+                        to={`/customerservice/${service.business_slug}?bid=${service.id}`}
+                        className="service-link"
+                      >
+                        <button className="book-now-btn">Book Now <span>→</span></button>
+                      </Link>
+                    ) : (
+                      <button className="book-now-btn" disabled style={{ opacity: 0.5 }}>
+                        Unavailable
+                      </button>
+                    )}
                   </div>
                 </div>
-
-                <Link to="/customerservice1" className="service-link">
-                  <button className="book-now-btn">
-                    Book Now
-                    <span>→</span>
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ))}
+              ))
+          }
         </div>
 
-        {/* Empty State Card */}
-        {/* <div className="empty-state-card">
-          <div className="empty-state-icon-wrapper">
-            <MessageCircle className="empty-state-icon" />
-          </div>
-          <h3 className="empty-state-title">Don't see what you need?</h3>
-          <p className="empty-state-description">
-            Our AI assistant can help you find special requests or availability across different sites.
-          </p>
-          <button className="talk-ai-btn">
-            💬 Talk to our AI
-          </button>
-        </div>
-      </div> */}
-
-        {/* Footer */}
-        {/* <footer className="reservation-footer">
-        <div className="footer-wrapper">
-          <div className="footer-content">
-            <p className="footer-text">
-              AI Reservation & CRM System • 2025 AI Receptionist & CRM System
-            </p>
-            <div className="footer-links">
-              <a href="#" className="footer-link">Privacy Policy</a>
-              <a href="#" className="footer-link">Terms of Service</a>
-            </div>
-            <p className="footer-protected">
-              Protected by ⚡ AI Reservation & CRM System
-            </p>
-          </div>
-        </div>
-      </footer> */}
       </div>
     </div>
   );

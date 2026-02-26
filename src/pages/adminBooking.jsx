@@ -1,128 +1,188 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  LayoutDashboard,
-  Calendar,
-  Settings,
-  TrendingUp,
-  LogOut,
   Search,
-  Plus,
   CalendarDays,
   SlidersHorizontal,
-  Phone,
-  MessageSquare,
-  MoreVertical,
   ChevronLeft,
   ChevronRight,
-  Sliders,
-  Sparkles
+  Sparkles,
+  RefreshCw,
+  AlertCircle,
 } from 'lucide-react';
 import '../assets/styles/adminBooking.css';
 import Sidebar from '../components/Sidebar.jsx';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
+// ── API setup ──────────────────────────────────────────────────────────────
+const getToken = () => Cookies.get('access_token') || null;
+
+const api = axios.create({
+  baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+});
+
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) config.headers['Authorization'] = `Bearer ${token}`;
+  return config;
+});
+
+const httpErrorMsg = (err) => {
+  const status = err?.response?.status;
+  const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? err?.response?.data?.detail;
+  if (!err.response) return 'Network error — cannot reach the server.';
+  if (status === 401) return 'Session expired. Please log in again.';
+  if (status === 403) return 'Forbidden — your account may not have admin privileges.';
+  if (status === 404) return 'Endpoint not found on server.';
+  if (status >= 500) return `Server error (${status}) — check backend logs.`;
+  return msg ?? `Unexpected error (${status}).`;
+};
+
+// ── Status config ──────────────────────────────────────────────────────────
+const STATUS_CONFIG = {
+  PENDING_PAYMENT: { bg: '#fef3c7', color: '#92400e', label: 'Pending Payment' },
+  INITIATED:       { bg: '#dbeafe', color: '#1e40af', label: 'Initiated' },
+  CONFIRMED:       { bg: '#d1fae5', color: '#065f46', label: 'Confirmed' },
+  CANCELLED:       { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' },
+  EXPIRED:         { bg: '#f3f4f6', color: '#6b7280', label: 'Expired' },
+};
+
+const getStatusStyle = (s) => STATUS_CONFIG[s] ?? { bg: '#f3f4f6', color: '#374151', label: s };
+
+// ── Avatar helpers ─────────────────────────────────────────────────────────
+const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#059669', '#d97706', '#dc2626'];
+const getInitials = (name) => {
+  if (!name) return '?';
+  const parts = name.trim().split(' ');
+  return parts.length >= 2
+    ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+    : parts[0].slice(0, 2).toUpperCase();
+};
+const getAvatarColor = (name) => {
+  if (!name) return '#94a3b8';
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+};
+
+// ── Date formatter ─────────────────────────────────────────────────────────
+const formatSlot = (iso) => {
+  if (!iso) return { date: '—', time: '—' };
+  const d = new Date(iso);
+  return {
+    date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+  };
+};
+
+// ── Pagination config ──────────────────────────────────────────────────────
+const PAGE_SIZE = 10;
+
+// ── Component ──────────────────────────────────────────────────────────────
 export default function Bookings() {
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab]     = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [bookings, setBookings]       = useState([]);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState(null);
+  const [page, setPage]               = useState(1);
+  const [stats, setStats] = useState({
+    total_bookings:  0,
+    pending_payment: 0,
+    confirmed:       0,
+    cancelled:       0,
+    expired:         0,
+  });
 
-  const tabs = ['All', 'Confirmed', 'Pending', 'Cancelled'];
+  const tabs = ['All', 'INITIATED', 'PENDING_PAYMENT', 'CONFIRMED', 'CANCELLED', 'EXPIRED'];
 
-  const bookings = [
-    {
-      id: 1,
-      customer: 'Sarah Martinez',
-      phone: '(555) 012-3456',
-      initials: 'SM',
-      color: '#3b82f6',
-      service: 'Personal Training Session',
-      date: 'Today, 2:30 PM',
-      duration: '60 mins',
-      source: 'AI PHONE',
-      status: 'Confirmed'
-    },
-    {
-      id: 2,
-      customer: 'Michael Chen',
-      phone: '(555) 012-8899',
-      initials: 'MC',
-      color: '#f97316',
-      service: 'Table Reservation - 6 Guests',
-      date: 'Nov 23, 7:00 PM',
-      duration: '120 mins',
-      source: 'AI CHAT',
-      status: 'Pending'
-    },
-    {
-      id: 3,
-      customer: 'Jessica Brown',
-      phone: '(555) 012-7744',
-      initials: 'JB',
-      color: '#6b7280',
-      service: 'Yoga Class - Morning Session',
-      date: 'Nov 24, 09:00 AM',
-      duration: '45 mins',
-      source: 'MANUAL',
-      status: 'Cancelled'
-    },
-    {
-      id: 4,
-      customer: 'David Thompson',
-      phone: '(555) 012-9233',
-      initials: 'DT',
-      color: '#06b6d4',
-      service: 'Private Dining Experience',
-      date: 'Today, 8:00 PM',
-      duration: '180 mins',
-      source: 'AI PHONE',
-      status: 'Confirmed'
-    },
-    {
-      id: 5,
-      customer: 'Emma Wilson',
-      phone: '(555) 012-4521',
-      initials: 'EW',
-      color: '#a855f7',
-      service: 'Spa & Wellness Package',
-      date: 'Nov 25, 11:00 AM',
-      duration: '90 mins',
-      source: 'AI CHAT',
-      status: 'Confirmed'
-    },
-    {
-      id: 6,
-      customer: 'James Rodriguez',
-      phone: '(555) 012-7768',
-      initials: 'JR',
-      color: '#10b981',
-      service: 'CrossFit Group Training',
-      date: 'Today, 5:30 PM',
-      duration: '60 mins',
-      source: 'AI PHONE',
-      status: 'Pending'
+  // ── Fetch ────────────────────────────────────────────────────────────────
+  const fetchBookings = async (statusFilter = 'All') => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = {};
+      if (statusFilter && statusFilter !== 'All') {
+        params.status_filter = statusFilter.toUpperCase();
+      }
+
+      const response = await api.get('/api/v1/admin/bookings-summary', { params });
+      const d = response.data?.data ?? response.data ?? {};
+
+      setStats({
+        total_bookings:  d.total_bookings  ?? 0,
+        pending_payment: d.pending_payment ?? 0,
+        confirmed:       d.confirmed       ?? 0,
+        cancelled:       d.cancelled       ?? 0,
+        expired:         d.expired         ?? 0,
+      });
+
+      const raw = Array.isArray(d.bookings) ? d.bookings : [];
+      setBookings(raw.map((b) => ({
+        id:         b.booking_id         ?? b.id ?? '—',
+        trackingId: b.public_tracking_id ?? '—',
+        customer:   b.customer_name      ?? 'Guest',
+        phone:      b.customer_phone     ?? '—',
+        email:      b.customer_email     ?? '—',
+        service:    b.service_name       ?? '—',
+        slotStart:  b.slot_start         ?? null,
+        status:     b.status             ?? '—',
+        createdAt:  b.created_at         ?? null,
+      })));
+
+      setPage(1);
+    } catch (err) {
+      setError(httpErrorMsg(err));
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => { fetchBookings(activeTab); }, [activeTab]);
+
+  // ── Filter + paginate ────────────────────────────────────────────────────
+  const filtered = bookings.filter((b) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      b.customer.toLowerCase().includes(q) ||
+      b.phone.includes(q) ||
+      b.email.toLowerCase().includes(q) ||
+      b.service.toLowerCase().includes(q) ||
+      b.trackingId.toLowerCase().includes(q) ||
+      b.status.toLowerCase().includes(q)
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="bookings-container">
       <Sidebar />
 
-      {/* Main Content */}
       <main className="bookings-main-content">
-        {/* Header */}
+
+        {/* ── Page Header ── */}
         <header className="bookings-header">
           <div>
             <h1 className="bookings-page-title">Bookings</h1>
             <p className="bookings-page-subtitle">Manage and monitor all incoming appointments.</p>
           </div>
-          {/* <Link to="/addbusiness">
-            <button className="bookings-new-business-btn">
-              <Plus className="bookings-plus-icon" />
-              New Business
-            </button>
-          </Link> */}
+          <button
+            className="refresh-btn"
+            onClick={() => fetchBookings(activeTab)}
+            disabled={loading}
+            title="Refresh"
+            style={{ marginLeft: 'auto', background: 'none', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.4rem 0.75rem', cursor: 'pointer' }}
+          >
+            <RefreshCw size={15} className={loading ? 'spinning' : ''} />
+          </button>
         </header>
 
-        {/* AI Insight Card */}
+        {/* ── AI Insight ── */}
         <div className="bookings-ai-insight">
           <div className="bookings-ai-insight-icon">
             <Sparkles className="sparkles-icon" />
@@ -130,56 +190,61 @@ export default function Bookings() {
           <div className="bookings-ai-insight-content">
             <h3 className="bookings-ai-insight-title">AI Insight</h3>
             <p className="bookings-ai-insight-text">
-              Your AI Receptionist handled 85% of bookings today. Typical peak hours starting in 2 hours.
+              {stats.total_bookings > 0
+                ? `${stats.total_bookings} total bookings tracked. ${stats.pending_payment} awaiting payment.`
+                : 'No bookings yet. Your AI Receptionist is ready to take appointments.'}
             </p>
           </div>
-          <a href="/analytics" className="bookings-view-analytics">VIEW ANALYTICS</a>
+          <a href="/adminDashboard" className="bookings-view-analytics">VIEW ANALYTICS</a>
         </div>
 
-        {/* Stats Cards */}
+        {/* ── Stats Cards ── */}
         <div className="bookings-stats-grid">
           <div className="bookings-stat-card">
-            <div className="bookings-stat-label">Total Bookings Today</div>
-            <div className="bookings-stat-value">48</div>
-            <div className="bookings-stat-change positive">+12% vs yesterday</div>
+            <div className="bookings-stat-label">Total Bookings</div>
+            <div className="bookings-stat-value">{loading ? '—' : stats.total_bookings}</div>
           </div>
           <div className="bookings-stat-card">
-            <div className="bookings-stat-label">AI Managed</div>
-            <div className="bookings-stat-value">41</div>
-            <div className="bookings-stat-change positive">85.4% Efficiency</div>
+            <div className="bookings-stat-label">Pending Payment</div>
+            <div className="bookings-stat-value warning">{loading ? '—' : stats.pending_payment}</div>
+            <div className="bookings-stat-change warning">Requires action</div>
           </div>
           <div className="bookings-stat-card">
-            <div className="bookings-stat-label">Pending Actions</div>
-            <div className="bookings-stat-value warning">7</div>
-            <div className="bookings-stat-change warning">Requires review</div>
+            <div className="bookings-stat-label">Confirmed</div>
+            <div className="bookings-stat-value">{loading ? '—' : stats.confirmed}</div>
+            <div className="bookings-stat-change positive">Paid &amp; confirmed</div>
+          </div>
+          <div className="bookings-stat-card">
+            <div className="bookings-stat-label">Cancelled / Expired</div>
+            <div className="bookings-stat-value">{loading ? '—' : stats.cancelled + stats.expired}</div>
           </div>
         </div>
 
-        {/* Search and Filters */}
+        {/* ── Search & Filters ── */}
         <div className="bookings-search-section">
           <div className="bookings-search-container">
             <Search className="bookings-search-icon" />
             <input
               type="text"
-              placeholder="Search by customer, phone, or service..."
+              placeholder="Search by name, phone, email, booking ID or service..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
               className="bookings-search-input"
             />
           </div>
-          <div className="bookings-filter-buttons">
+          {/* <div className="bookings-filter-buttons">
             <button className="bookings-date-filter">
               <CalendarDays className="filter-icon" />
-              Jan 11 - Jan 18
+              Date Range
             </button>
             <button className="bookings-filters-btn">
               <SlidersHorizontal className="filter-icon" />
               Filters
             </button>
-          </div>
+          </div> */}
         </div>
 
-        {/* Tabs */}
+        {/* ── Tabs ── */}
         <div className="bookings-tabs">
           {tabs.map((tab) => (
             <button
@@ -187,80 +252,154 @@ export default function Bookings() {
               onClick={() => setActiveTab(tab)}
               className={`bookings-tab ${activeTab === tab ? 'active' : ''}`}
             >
-              {tab}
+              {tab === 'All' ? 'All' : STATUS_CONFIG[tab]?.label ?? tab}
             </button>
           ))}
         </div>
 
-        {/* Bookings Table */}
-        <div className="bookings-table-card">
-          <div className="bookings-table">
-            <div className="bookings-table-header">
-              <div className="bookings-th">CUSTOMER</div>
-              <div className="bookings-th">SERVICE</div>
-              <div className="bookings-th">DATE & TIME</div>
-              <div className="bookings-th">SOURCE</div>
-              <div className="bookings-th">STATUS</div>
-              <div className="bookings-th">ACTIONS</div>
-            </div>
+        {/* ── Error Banner ── */}
+        {error && (
+          <div
+            className="bookings-error-banner"
+            role="alert"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fee2e2', color: '#991b1b', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}
+          >
+            <AlertCircle size={16} />
+            <span style={{ flex: 1 }}>{error}</span>
+            <button onClick={() => fetchBookings(activeTab)} style={{ background: 'none', border: 'none', color: '#991b1b', fontWeight: '600', cursor: 'pointer' }}>Retry</button>
+            <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: '#991b1b', cursor: 'pointer', fontSize: '1.1rem' }}>&times;</button>
+          </div>
+        )}
 
-            {bookings.map((booking) => (
-              <div key={booking.id} className="bookings-table-row">
-                <div className="bookings-td customer-cell">
-                  <div className="customer-avatar" style={{ backgroundColor: booking.color }}>
-                    {booking.initials}
-                  </div>
-                  <div className="customer-info">
-                    <div className="customer-name">{booking.customer}</div>
-                    <div className="customer-phone">{booking.phone}</div>
-                  </div>
-                </div>
-                <div className="bookings-td">{booking.service}</div>
-                <div className="bookings-td">
-                  <div className="datetime-info">
-                    <div className="date-text">{booking.date}</div>
-                    <div className="duration-text">{booking.duration}</div>
-                  </div>
-                </div>
-                <div className="bookings-td">
-                  <div className="source-badge">
-                    {booking.source === 'AI PHONE' && <Phone className="source-icon" />}
-                    {booking.source === 'AI CHAT' && <MessageSquare className="source-icon" />}
-                    <span>{booking.source}</span>
-                  </div>
-                </div>
-                <div className="bookings-td">
-                  <span className={`status-badge status-${booking.status.toLowerCase()}`}>
-                    {booking.status}
-                  </span>
-                </div>
-                <div className="bookings-td">
-                  <button className="action-menu-btn">
-                    <MoreVertical className="more-icon" />
-                  </button>
-                </div>
+        {/* ── Loading ── */}
+        {loading && (
+          <div className="bookings-loading">
+            <div className="loading-spinner" />
+            <p>Loading bookings...</p>
+          </div>
+        )}
+
+        {/* ── Table ── */}
+        {!loading && !error && (
+          <div className="bookings-table-card">
+            <div className="bookings-table">
+
+              {/* Header — 5 columns, no Payment or Actions */}
+              <div className="bookings-table-header">
+                <div className="bookings-th">CUSTOMER</div>
+                <div className="bookings-th">SERVICE</div>
+                <div className="bookings-th">SLOT</div>
+                <div className="bookings-th">BOOKING ID</div>
+                <div className="bookings-th">STATUS</div>
               </div>
-            ))}
-          </div>
 
-          {/* Pagination */}
-          <div className="bookings-pagination">
-            <div className="pagination-info">Showing 1 to 6 of 52 bookings</div>
-            <div className="pagination-controls">
-              <button className="pagination-btn">
-                <ChevronLeft className="pagination-icon" />
-              </button>
-              <button className="pagination-btn active">1</button>
-              <button className="pagination-btn">2</button>
-              <button className="pagination-btn">3</button>
-              <span className="pagination-dots">...</span>
-              <button className="pagination-btn">9</button>
-              <button className="pagination-btn">
-                <ChevronRight className="pagination-icon" />
-              </button>
+              {/* Empty state */}
+              {paginated.length === 0 && (
+                <div className="bookings-empty-state" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                  {searchQuery ? 'No bookings match your search.' : 'No bookings found.'}
+                </div>
+              )}
+
+              {/* Rows */}
+              {paginated.map((b) => {
+                const slot        = formatSlot(b.slotStart);
+                const statusStyle = getStatusStyle(b.status);
+                const initials    = getInitials(b.customer !== 'Guest' ? b.customer : null);
+                const avatarColor = getAvatarColor(b.customer);
+
+                return (
+                  <div key={b.id} className="bookings-table-row">
+
+                    {/* Customer */}
+                    <div className="bookings-td customer-cell">
+                      <div
+                        className="customer-avatar"
+                        style={{ backgroundColor: avatarColor, color: 'white', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '0.75rem', flexShrink: 0 }}
+                      >
+                        {initials}
+                      </div>
+                      <div className="customer-info">
+                        <div className="customer-name">{b.customer}</div>
+                        <div className="customer-phone">{b.phone}</div>
+                      </div>
+                    </div>
+
+                    {/* Service */}
+                    <div className="bookings-td" style={{ fontSize: '0.875rem' }}>{b.service}</div>
+
+                    {/* Slot */}
+                    <div className="bookings-td">
+                      <div style={{ fontSize: '0.875rem', fontWeight: '500' }}>{slot.date}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{slot.time}</div>
+                    </div>
+
+                    {/* Booking ID */}
+                    <div className="bookings-td">
+                      <span style={{ fontFamily: 'monospace', fontWeight: '600', fontSize: '0.8rem', color: '#2563eb' }}>
+                        {b.trackingId}
+                      </span>
+                    </div>
+
+                    {/* Status */}
+                    <div className="bookings-td">
+                      <span style={{ backgroundColor: statusStyle.bg, color: statusStyle.color, padding: '3px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                        {statusStyle.label}
+                      </span>
+                    </div>
+
+                  </div>
+                );
+              })}
             </div>
+
+            {/* ── Pagination ── */}
+            <div className="bookings-pagination">
+              <div className="pagination-info">
+                Showing {paginated.length} of {filtered.length} bookings
+                {filtered.length !== bookings.length && ` (filtered from ${bookings.length})`}
+              </div>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  <ChevronLeft size={15} />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                  .reduce((acc, p, idx, arr) => {
+                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...');
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, i) =>
+                    p === '...' ? (
+                      <span key={`dots-${i}`} className="pagination-dots">...</span>
+                    ) : (
+                      <button
+                        key={p}
+                        className={`pagination-btn ${page === p ? 'active' : ''}`}
+                        onClick={() => setPage(p)}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+            </div>
+
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

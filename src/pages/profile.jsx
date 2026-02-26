@@ -1,231 +1,389 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../assets/styles/admin-dashboard.css";
+import notification from "../assets/notification.png";
+import email from "../assets/email.png";
+import sms from "../assets/chatting.png";
+import whatsappIcon from "../assets/whatsapp.png";
+import "../assets/styles/adminProfile.css";
 import Sidebar from "../components/Sidebar";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { CheckCircle, AlertCircle, Loader } from "lucide-react";
+import { usePlatform } from "./platformContext";
+
+// ── API instance ───────────────────────────────────────────────────────────
+const api = axios.create({
+  baseURL: import.meta?.env?.VITE_API_BASE_URL || "https://reservation-xynh.onrender.com",
+  withCredentials: true,
+  headers: { "Content-Type": "application/json", Accept: "application/json" },
+});
+
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("access_token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 const AdminProfileDashboard = () => {
-    const navigate = useNavigate();
-    const [profile, setProfile] = useState({
-        name: "Admin User",
-        email: "admin@example.com",
-        role: "Super Admin",
-        phone: "+1 (555) 123-4567",
-        company: "AI Reservation & CRM System",
-        timezone: "Eastern Time (ET)",
-    });
+  const navigate = useNavigate();
 
-    const stats = useMemo(
-        () => ({
-            totalBusinesses: 12,
-            activeBusinesses: 9,
-            totalBookings: 1842,
-            conversions: 312,
-            recentInteractions: [
-                { name: "Downtown Health Clinic", status: "Converted", time: "2m ago", interaction: "Booked appointment for 3:00 PM" },
-                { name: "Sunset Restaurant", status: "Hands-off", time: "15m ago", interaction: "Customer asked for menu details" },
-                { name: "Elite Fitness Center", status: "Converted", time: "1h ago", interaction: "Signed up for monthly membership" },
-                { name: "City Dental Care", status: "Converted", time: "3h ago", interaction: "Rescheduled cleaning appointment" },
-            ],
-        }),
-        []
-    );
+  // ── Global platform name from context ─────────────────────────────────
+  const { platformName, setPlatformName } = usePlatform();
 
-    const handleChange = (key, value) => {
-        setProfile((prev) => ({ ...prev, [key]: value }));
-    };
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [smsAlerts, setSmsAlerts]     = useState(false);
+  const [whatsapp, setWhatsapp]       = useState(false);
 
-    const handleSave = (e) => {
-        e.preventDefault();
-        alert("Profile updated successfully!");
-    };
+  const [profile, setProfile] = useState({
+    name: "Admin",
+    email: "admin@example.com",
+    phone: "+1 (555) 123-4567",
+    company: platformName, // initialized from context
+    timezone: "Eastern Time (ET)",
+  });
 
-    return (
-        <div className="admin-dashboard">
-            <Sidebar />
-            {/* Top Bar */}
-            <div className="admin-topbar">
-                <div>
-                    <h1 className="admin-title">Admin Profile</h1>
-                    <p className="admin-subtitle">Manage your account, preferences, and activity.</p>
-                </div>
+  // ── Local input state for the platform name field ──────────────────────
+  const [platformNameInput, setPlatformNameInput]       = useState(platformName);
+  const [platformNameSaving, setPlatformNameSaving]     = useState(false);
+  const [platformNameStatus, setPlatformNameStatus]     = useState(null); // 'success' | 'error'
+  const [platformNameError, setPlatformNameError]       = useState("");
 
-                <div className="admin-topbar-actions">
-                    <button className="btn-secondary" type="button">
-                        Download Report
-                    </button>
-                    <button className="btn-primary" type="button">
-                        Update Profile
-                    </button>
-                </div>
+  const stats = useMemo(
+    () => ({
+      totalBusinesses: 12,
+      activeBusinesses: 9,
+      totalBookings: 1842,
+      conversions: 312,
+      recentInteractions: [
+        { name: "Downtown Health Clinic", status: "Converted",  time: "2m ago",  interaction: "Booked appointment for 3:00 PM" },
+        { name: "Sunset Restaurant",      status: "Hands-off",  time: "15m ago", interaction: "Customer asked for menu details" },
+        { name: "Elite Fitness Center",   status: "Converted",  time: "1h ago",  interaction: "Signed up for monthly membership" },
+        { name: "City Dental Care",       status: "Converted",  time: "3h ago",  interaction: "Rescheduled cleaning appointment" },
+      ],
+    }),
+    []
+  );
 
-            </div>
+  const handleChange = (key, value) => {
+    setProfile((prev) => ({ ...prev, [key]: value }));
+  };
 
-            {/* Grid Layout */}
-            <div className="admin-grid">
-                {/* Left Column: Profile Card */}
-                <div className="card profile-card">
-                    <div className="profile-header">
-                        <div className="avatar">{profile.name?.[0]?.toUpperCase() || "A"}</div>
+  const handleSave = (e) => {
+    e.preventDefault();
+    alert("Profile updated successfully!");
+  };
 
-                        <div className="profile-meta">
-                            <h2 className="profile-name">{profile.name}</h2>
-                            <p className="profile-role">{profile.role} • {profile.company}</p>
+  // ── Save platform name → API + context (updates everywhere) ───────────
+  const handlePlatformNameSave = async (e) => {
+    e.preventDefault();
+    if (!platformNameInput.trim()) return;
 
-                            <div className="profile-badges">
-                                <span className="pill pill-green">Online</span>
-                                <span className="pill pill-blue">Full Access</span>
-                            </div>
-                        </div>
-                    </div>
+    setPlatformNameSaving(true);
+    setPlatformNameStatus(null);
+    setPlatformNameError("");
 
-                    <div className="profile-info">
-                        <div className="info-row">
-                            <span className="info-label">Email</span>
-                            <span className="info-value">{profile.email}</span>
-                        </div>
-                        <div className="info-row">
-                            <span className="info-label">Phone</span>
-                            <span className="info-value">{profile.phone}</span>
-                        </div>
-                        <div className="info-row">
-                            <span className="info-label">Timezone</span>
-                            <span className="info-value">{profile.timezone}</span>
-                        </div>
-                    </div>
+    try {
+      await api.put("/api/v1/admin/platform-name", {
+        platform_name: platformNameInput.trim(),
+      });
 
-                    <div className="profile-actions">
-                        <button className="btn-secondary w-full" type="button">
-                            Change Password
-                        </button>
-                        {/* <button
-                            className="btn-danger w-full"
-                            type="button"
-                            onClick={() => navigate('/')}
-                        >
-                            Logout
-                        </button> */}
-                    </div>
-                    {/* Settings Form */}
-                    <div className="card settings-card">
-                        <h3>Account Settings</h3>
+      // ── Update context → Sidebar + all other consumers re-render ──────
+      setPlatformName(platformNameInput.trim());
+      setPlatformNameStatus("success");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ??
+        err?.response?.data?.error ??
+        "Failed to update platform name. Please try again.";
+      setPlatformNameError(msg);
+      setPlatformNameStatus("error");
+    } finally {
+      setPlatformNameSaving(false);
+      setTimeout(() => setPlatformNameStatus(null), 4000);
+    }
+  };
 
-                        <form onSubmit={handleSave} className="form">
-                            <div className="form-grid">
-                                <div className="form-field">
-                                    <label>Full Name</label>
-                                    <input
-                                        value={profile.name}
-                                        onChange={(e) => handleChange("name", e.target.value)}
-                                        placeholder="Enter your name"
-                                    />
-                                </div>
+  const handlePlatformNameCancel = () => {
+    setPlatformNameInput(platformName); // reset to current context value
+    setPlatformNameStatus(null);
+    setPlatformNameError("");
+  };
 
-                                <div className="form-field">
-                                    <label>Email</label>
-                                    <input
-                                        value={profile.email}
-                                        onChange={(e) => handleChange("email", e.target.value)}
-                                        placeholder="Enter your email"
-                                    />
-                                </div>
+  return (
+    <div className="admin-dashboard">
+      <Sidebar />
 
-                                <div className="form-field">
-                                    <label>Phone</label>
-                                    <input
-                                        value={profile.phone}
-                                        onChange={(e) => handleChange("phone", e.target.value)}
-                                        placeholder="Enter phone"
-                                    />
-                                </div>
-
-                                <div className="form-field">
-                                    <label>Timezone</label>
-                                    <select
-                                        value={profile.timezone}
-                                        onChange={(e) => handleChange("timezone", e.target.value)}
-                                    >
-                                        <option>Eastern Time (ET)</option>
-                                        <option>Central Time (CT)</option>
-                                        <option>Mountain Time (MT)</option>
-                                        <option>Pacific Time (PT)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="form-actions">
-                                <button type="button" className="btn-secondary">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn-primary">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="right-col">
-                    {/* Stats */}
-                    <div className="stats-grid">
-                        <div className="card stat-card">
-                            <p className="stat-label">Total Businesses</p>
-                            <p className="stat-value">{stats.totalBusinesses}</p>
-                            <p className="stat-sub">All businesses in system</p>
-                        </div>
-
-                        <div className="card stat-card">
-                            <p className="stat-label">Active Businesses</p>
-                            <p className="stat-value">{stats.activeBusinesses}</p>
-                            <p className="stat-sub">Currently running AI</p>
-                        </div>
-
-                        <div className="card stat-card">
-                            <p className="stat-label">Total Bookings</p>
-                            <p className="stat-value">{stats.totalBookings}</p>
-                            <p className="stat-sub">AI generated bookings</p>
-                        </div>
-
-                        <div className="card stat-card">
-                            <p className="stat-label">Conversions</p>
-                            <p className="stat-value">{stats.conversions}</p>
-                            <p className="stat-sub">Converted interactions</p>
-                        </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="card recent-activity-card">
-                        <div className="card-head">
-                            <h3>Recent AI Interactions</h3>
-                            <button type="button" className="btn-link">
-                                View All
-                            </button>
-                        </div>
-
-                        <div className="activity-table">
-                            {stats.recentInteractions.map((a, idx) => (
-                                <div key={idx} className="activity-row">
-                                    <div className="activity-left">
-                                        <p className="activity-name">{a.name}</p>
-                                        <p className="activity-interaction">{a.interaction}</p>
-                                    </div>
-
-                                    <div className="activity-right">
-                                        <span className={`status-badges ${a.status.toLowerCase().replace(" ", "-")}`}>
-                                            {a.status}
-                                        </span>
-                                        <span className="activity-time">{a.time}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
+      {/* Top Bar */}
+      <div className="admin-topbar">
+        <div>
+          <h1 className="admin-title">Admin Profile</h1>
+          <p className="admin-subtitle">Manage your account, preferences, and activity.</p>
         </div>
-    );
+      </div>
+
+      {/* Grid Layout */}
+      <div className="admin-grid">
+
+        {/* ── Left Column ── */}
+        <div className="left-col">
+          <div className="cards profile-card">
+
+            {/* Profile header */}
+            <div className="profile-header">
+              <div className="avatar">{profile.name?.[0]?.toUpperCase() || "A"}</div>
+              <div className="profile-meta">
+                <h2 className="profile-name">{profile.name}</h2>
+                {/* Shows live platform name from context */}
+                <p className="profile-role">{platformName}</p>
+                <div className="profile-badges" />
+              </div>
+            </div>
+
+            <div className="profile-info">
+              <div className="info-row">
+                <span className="info-label">Email</span>
+                <span className="info-value">{profile.email}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Phone</span>
+                <span className="info-value">{profile.phone}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Timezone</span>
+                <span className="info-value">{profile.timezone}</span>
+              </div>
+            </div>
+
+            <div className="profile-actions">
+              <Link to="/change-password">
+                <button className="btn-secondary w-full" type="button">
+                  Change Password
+                </button>
+              </Link>
+            </div>
+
+            {/* ── Change Platform Name Card ── */}
+            <div
+              style={{
+                marginTop: '1.25rem',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '1.25rem',
+              }}
+            >
+              <div style={{ marginBottom: '1rem' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1e293b', margin: 0 }}>
+                  Change Platform Name
+                </h3>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>
+                  Updates instantly across the sidebar, header, and all pages.
+                </p>
+              </div>
+
+              <form onSubmit={handlePlatformNameSave}>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
+                    Platform Name
+                  </label>
+                  <input
+                    value={platformNameInput}
+                    onChange={(e) => {
+                      setPlatformNameInput(e.target.value);
+                      setPlatformNameStatus(null);
+                    }}
+                    placeholder="Enter the platform name"
+                    required
+                    disabled={platformNameSaving}
+                    style={{
+                      width: '100%',
+                      padding: '0.55rem 0.75rem',
+                      fontSize: '0.875rem',
+                      border: `1.5px solid ${
+                        platformNameStatus === 'error'   ? '#fca5a5' :
+                        platformNameStatus === 'success' ? '#6ee7b7' : '#e2e8f0'
+                      }`,
+                      borderRadius: '8px',
+                      outline: 'none',
+                      background: platformNameSaving ? '#f1f5f9' : 'white',
+                      color: '#1e293b',
+                      transition: 'border-color 0.2s',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Status feedback */}
+                {platformNameStatus === 'success' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#059669', marginBottom: '0.75rem' }}>
+                    <CheckCircle size={14} />
+                    Platform name updated everywhere!
+                  </div>
+                )}
+                {platformNameStatus === 'error' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#dc2626', marginBottom: '0.75rem' }}>
+                    <AlertCircle size={14} />
+                    {platformNameError}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={handlePlatformNameCancel}
+                    disabled={platformNameSaving}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      borderRadius: '8px',
+                      border: '1.5px solid #e2e8f0',
+                      background: 'white',
+                      color: '#374151',
+                      cursor: platformNameSaving ? 'not-allowed' : 'pointer',
+                      opacity: platformNameSaving ? 0.6 : 1,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!platformNameInput.trim() || platformNameSaving}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: !platformNameInput.trim() || platformNameSaving ? '#93c5fd' : '#2563eb',
+                      color: 'white',
+                      cursor: !platformNameInput.trim() || platformNameSaving ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    {platformNameSaving && <Loader size={13} className="spinning" />}
+                    {platformNameSaving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Account Settings Form */}
+            {/* <div className="card settings-card">
+              <h3>Account Settings</h3>
+              <form onSubmit={handleSave} className="form">
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>Full Name</label>
+                    <input
+                      value={profile.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div className="form-field">
+                    <label>Email</label>
+                    <input
+                      value={profile.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="form-field">
+                    <label>Phone</label>
+                    <input
+                      value={profile.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      placeholder="Enter phone"
+                    />
+                  </div>
+                  <div className="form-field">
+                    <label>Timezone</label>
+                    <select
+                      value={profile.timezone}
+                      onChange={(e) => handleChange("timezone", e.target.value)}
+                    >
+                      <option>Eastern Time (ET)</option>
+                      <option>Central Time (CT)</option>
+                      <option>Mountain Time (MT)</option>
+                      <option>Pacific Time (PT)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="form-actions">
+                  <button type="button" className="btn-secondary">Cancel</button>
+                  <button type="submit" className="btn-primary">Save Changes</button>
+                </div>
+              </form>
+            </div> */}
+
+          </div>
+        </div>
+
+        {/* ── Right Column ── */}
+        <div className="right-col">
+
+          {/* <div className="card recent-activity-card">
+            <div className="card-head">
+              <h3>Recent AI Interactions</h3>
+              <button type="button" className="btn-link">View All</button>
+            </div>
+            <div className="activity-table">
+              {stats.recentInteractions.map((a, idx) => (
+                <div key={idx} className="activity-row">
+                  <div className="activity-left">
+                    <p className="activity-name">{a.name}</p>
+                    <p className="activity-interaction">{a.interaction}</p>
+                  </div>
+                  <div className="activity-right">
+                    <span className={`status-badges ${a.status.toLowerCase().replace(" ", "-")}`}>
+                      {a.status}
+                    </span>
+                    <span className="activity-time">{a.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div> */}
+
+          <section className="section">
+            <h2 className="section-title">
+              <img src={notification} alt="notification" className="notification-icon" />
+              Notification Channels
+            </h2>
+            <div className="section-content">
+              <div className="input-group toggle-group">
+                <label><img src={email} alt="email" className="pop-icon" />Email Alerts</label>
+                <label className="toggle-switch">
+                  <input type="checkbox" checked={emailAlerts} onChange={() => setEmailAlerts(!emailAlerts)} />
+                  <span className="toggle-slider" />
+                </label>
+              </div>
+              <div className="input-group toggle-group">
+                <label><img src={sms} alt="sms" className="sms-icon" />SMS Alerts</label>
+                <label className="toggle-switch">
+                  <input type="checkbox" checked={smsAlerts} onChange={() => setSmsAlerts(!smsAlerts)} />
+                  <span className="toggle-slider" />
+                </label>
+              </div>
+              <div className="input-group toggle-group">
+                <label><img src={whatsappIcon} alt="whatsapp" className="whatsapp-icon" />WhatsApp</label>
+                <label className="toggle-switch">
+                  <input type="checkbox" checked={whatsapp} onChange={() => setWhatsapp(!whatsapp)} />
+                  <span className="toggle-slider" />
+                </label>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AdminProfileDashboard;

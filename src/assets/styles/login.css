@@ -43,8 +43,74 @@
     border-radius: 8px;
     font-size: 1rem;
     color: #000000;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
 }
 
+.form-group input:focus {
+    outline: none;
+    border-color: #365fb8;
+    box-shadow: 0 0 0 3px rgba(54, 95, 184, 0.15);
+}
+
+/* ── Alert ── */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    text-align: left;
+    animation: slideDown 0.2s ease;
+}
+
+.alert-error {
+    background-color: #fff0f0;
+    border: 1px solid #f5c6c6;
+    color: #c0392b;
+}
+
+.alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.alert-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Button ── */
 .login-btn {
     width: 100%;
     padding: 1rem;
@@ -55,12 +121,37 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.login-btn:hover {
+.login-btn:hover:not(:disabled) {
     background-color: #214da0;
 }
 
+.login-btn:disabled {
+    background-color: #8da6d8;
+    cursor: not-allowed;
+}
+
+/* Loading spinner inside button */
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Forgot password link ── */
 .forgot-password-link {
     display: block;
     margin-top: 1rem;

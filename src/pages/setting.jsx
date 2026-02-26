@@ -7,9 +7,9 @@ import business from '../assets/business.png';
 import ai from '../assets/AI.png';
 import notification from '../assets/notification.png';
 import booking from '../assets/booking.png';
-import sms from '../assets/chatting.png';
-import email from '../assets/email.png';
-import whatsappIcon from '../assets/whatsapp.png';
+// import sms from '../assets/chatting.png';
+// import email from '../assets/email.png';
+// import whatsappIcon from '../assets/whatsapp.png';
 
 const SettingsPage = () => {
     const [businessName, setBusinessName] = useState('Modern Dental Care');
@@ -23,9 +23,9 @@ const SettingsPage = () => {
     );
 
     // Toggle state for Notification Channels
-    const [emailAlerts, setEmailAlerts] = useState(true);
-    const [smsAlerts, setSmsAlerts] = useState(true);
-    const [whatsapp, setWhatsapp] = useState(true);
+    // const [emailAlerts, setEmailAlerts] = useState(true);
+    // const [smsAlerts, setSmsAlerts] = useState(true);
+    // const [whatsapp, setWhatsapp] = useState(true);
 
     const teamMembers = [
         {
@@ -204,49 +204,7 @@ const SettingsPage = () => {
                         </div>
                     </section>
 
-                    {/* Notification Channels Section */}
-                    <section className="section">
-                        <h2 className="section-title">
-                            <img src={notification} alt="notification" className="notification-icon" />
-                            Notification Channels
-                        </h2>
-                        <div className="section-content">
-                            <div className="input-group toggle-group">
-
-                                <label><img src={email} alt="pop" className="pop-icon" />Email Alerts</label>
-                                <label className="toggle-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={emailAlerts}
-                                        onChange={() => setEmailAlerts(!emailAlerts)}
-                                    />
-                                    <span className="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div className="input-group toggle-group">
-                                <label><img src={sms} alt="sms" className="sms-icon" />SMS Alerts</label>
-                                <label className="toggle-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={smsAlerts}
-                                        onChange={() => setSmsAlerts(!smsAlerts)}
-                                    />
-                                    <span className="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div className="input-group toggle-group">
-                                <label><img src={whatsappIcon} alt="whatsapp" className="whatsapp-icon" />WhatsApp</label>
-                                <label className="toggle-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={whatsapp}
-                                        onChange={() => setWhatsapp(!whatsapp)}
-                                    />
-                                    <span className="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </section>
+                    
                 </div>
                 {/* <div className="team-permission-card">
                     <div className="team-header">

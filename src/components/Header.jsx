@@ -4,14 +4,16 @@ import { CheckCircle, Moon, Globe } from 'lucide-react';
 import logo from '../assets/logo.png.png';
 import '../assets/styles/header.css';
 import Vector1 from '../assets/Vector1.png';
+import { usePlatform } from '../pages/platformContext';
 const Header = ({
   icon = 'check',
-  showThemeToggle = false,
-  showMyBookings = true,
-  myBookingsText = 'My Bookings'
+  // showThemeToggle = false,
+  // showMyBookings = true,
+  // myBookingsText = 'My Bookings'
 }) => {
 
   const navigate = useNavigate();  // 👈 Add this
+  const { platformName } = usePlatform();  // 👈 Add platform context
 
   const IconComponent =
     icon === 'check' ? CheckCircle :
@@ -32,7 +34,7 @@ const Header = ({
             <img src={logo} alt="Logo" />
           </div>
           <span className="logo-text">
-            AI Reservation & CRM System
+            {platformName}
           </span>
         </div>
 

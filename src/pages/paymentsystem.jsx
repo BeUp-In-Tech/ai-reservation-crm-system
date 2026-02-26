@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Moon, FileText, CreditCard, CheckCircle, Lock, Globe } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../assets/styles/payment.css';
 import Header from '../components/Header.jsx';
 import hygn from '../assets/hygn.png';
@@ -9,6 +9,9 @@ import google from '../assets/logos_google-pay.png';
 
 export default function BookingPayment() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { serviceName, price, businessName, selectedTime, selectedDate } = location.state || {};
+
   const [paymentData, setPaymentData] = useState({
     cardholderName: 'name as on card',
     cardNumber: '0000 0000 0000 0000',
@@ -52,8 +55,8 @@ export default function BookingPayment() {
                     <div className="reservation-icon"><img src={hygn} alt="hygn" /></div>
                   </div>
                   <div className="reservation-details">
-                    <h3 className="reservation-title">Table for 4 People</h3>
-                    <p className="reservation-subtitle">Dinner Reservation</p>
+                    <h3 className="reservation-title">{serviceName || 'Service Reservation'}</h3>
+                    <p className="reservation-subtitle">{businessName || 'Direct Booking'}</p>
                   </div>
                 </div>
 
@@ -65,13 +68,13 @@ export default function BookingPayment() {
                   <div className="booking-info-row">
                     <input
                       type="text"
-                      value="Sat, Oct 28th"
+                      value={selectedDate || "Sat, Oct 28th"}
                       className="booking-input"
                       readOnly
                     />
                     <input
                       type="text"
-                      value="2:30 PM"
+                      value={selectedTime || "2:30 PM"}
                       className="booking-input"
                       readOnly
                     />
@@ -80,18 +83,18 @@ export default function BookingPayment() {
 
                 <div className="fee-breakdown">
                   <div className="fee-item">
-                    <span className="fee-label">Consultation Fee</span>
-                    <span className="fee-amount">$120.00</span>
+                    <span className="fee-label">Service Fee</span>
+                    <span className="fee-amount">${price || '0.00'}</span>
                   </div>
                   <div className="fee-item">
-                    <span className="fee-label">Equipment Service</span>
-                    <span className="fee-amount">$30.00</span>
+                    <span className="fee-label">Processing Fee</span>
+                    <span className="fee-amount">$0.00</span>
                   </div>
                 </div>
 
                 <div className="total-section">
                   <span className="total-label">Total Amount</span>
-                  <span className="total-amount">$150</span>
+                  <span className="total-amount">${price || '0.00'}</span>
                 </div>
               </div>
 
