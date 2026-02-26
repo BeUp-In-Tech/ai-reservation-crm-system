@@ -3,7 +3,6 @@ import LandingPage from './pages/landingpage.jsx';
 import CustomerServices from './pages/customerservice.jsx';
 import CustomerService from './pages/customerservice1.jsx';
 import BookingPayment from './pages/paymentsystem.jsx';
-import PaymentConfirmation from './pages/paymentConfirmation.jsx';
 import AdminDashboard from './pages/adminDashboard.jsx';
 import AdminBooking from './pages/adminBooking.jsx';
 import AdminConfiguration from './pages/aiconfiguration.jsx';
@@ -28,7 +27,6 @@ function App() {
           <Route path="/customerservices" element={<CustomerServices />} />
           <Route path="/customerservice" element={<CustomerService />} />
           <Route path="/paymentsystem" element={<BookingPayment />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="/adminDashboard/*" element={<AdminDashboard />} />
           <Route path="/adminBooking/*" element={<AdminBooking />} />
           <Route path="/aiconfiguration/*" element={<AdminConfiguration />} />
