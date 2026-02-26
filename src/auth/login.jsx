@@ -77,6 +77,7 @@ const AdminLogin = () => {
                 sameSite: 'strict',
                 secure: window.location.protocol === 'https:',
             });
+            localStorage.setItem('access_token', token);
 
             navigate('/adminDashboard');
         } catch (err) {
