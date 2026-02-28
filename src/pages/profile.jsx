@@ -6,11 +6,11 @@ import sms from "../assets/chatting.png";
 import whatsappIcon from "../assets/whatsapp.png";
 import "../assets/styles/adminProfile.css";
 import Sidebar from "../components/Sidebar";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { CheckCircle, AlertCircle, Loader } from "lucide-react";
 import { usePlatform } from "./platformContext";
+import { usePlatform as usePlatformContact } from "./platformContact";
 
 // ── API instance ───────────────────────────────────────────────────────────
 const api = axios.create({
@@ -29,19 +29,38 @@ const AdminProfileDashboard = () => {
   const navigate = useNavigate();
 
   const { platformName, setPlatformName } = usePlatform();
-
+  const { platformContact, setPlatformContact } = usePlatformContact();
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(false);
   const [whatsapp, setWhatsapp] = useState(false);
 
   const [profile, setProfile] = useState({
-    name: "Admin",
-    email: "admin@example.com",
-    phone: "+1 (555) 123-4567",
+    phone: platformContact,
+    email: platformContact,
+    address: platformContact,
     company: platformName,
     timezone: "Eastern Time (ET)",
   });
+  
+  const handlePlatformContactsave = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.put("/api/v1/admin/platform-contact", {
+        contact_phone: profile.phone,
+        contact_email: profile.email,
+        contact_address: profile.address,
+        updated_at: new Date().toISOString()
+      });
+      console.log("Platform contact updated successfully:", response.data);
+      alert("Platform contact updated successfully!");
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? "Failed to update platform contact. Please try again.";
+      console.error("Error updating platform contact:", err);
+      alert(msg);
+    }
+  }; 
 
+  
   const [platformNameInput, setPlatformNameInput] = useState(platformName);
   const [platformNameSaving, setPlatformNameSaving] = useState(false);
   const [platformNameStatus, setPlatformNameStatus] = useState(null);
@@ -214,7 +233,7 @@ const AdminProfileDashboard = () => {
             <input
               type="text"
               value={profile.phone}
-              disabled
+              onChange={(e) => handleChange('phone', e.target.value)}
               style={{
                 width: '100%',
                 padding: '10px',
@@ -222,16 +241,16 @@ const AdminProfileDashboard = () => {
                 fontSize: '16px',
                 borderRadius: '5px',
                 border: '1px solid #ddd',
-                backgroundColor: '#f2f2f2',
-                cursor: 'not-allowed',
+                backgroundColor: 'white',
+                cursor: 'text',
               }}
             />
 
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'black' }}>Email</label>
             <input
-              type="text"
+              type="email"
               value={profile.email}
-              disabled
+              onChange={(e) => handleChange('email', e.target.value)}
               style={{
                 width: '100%',
                 padding: '10px',
@@ -239,8 +258,8 @@ const AdminProfileDashboard = () => {
                 fontSize: '16px',
                 borderRadius: '5px',
                 border: '1px solid #ddd',
-                backgroundColor: '#f2f2f2',
-                cursor: 'not-allowed',
+                backgroundColor: 'white',
+                cursor: 'text',
               }}
             />
 
@@ -248,7 +267,7 @@ const AdminProfileDashboard = () => {
             <input
               type="text"
               value={profile.address}
-              disabled
+              onChange={(e) => handleChange('address', e.target.value)}
               style={{
                 width: '100%',
                 padding: '10px',
@@ -256,12 +275,13 @@ const AdminProfileDashboard = () => {
                 fontSize: '16px',
                 borderRadius: '5px',
                 border: '1px solid #ddd',
-                backgroundColor: '#f2f2f2',
-                cursor: 'not-allowed',
+                backgroundColor: 'white',
+                cursor: 'text',
               }}
             />
 
             <button
+              onClick={handlePlatformContactsave}
               style={{
                 width: '100%',
                 padding: '12px',

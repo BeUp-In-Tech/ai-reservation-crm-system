@@ -16,31 +16,34 @@ import ResetPassword from './auth/resetPassword.jsx';
 import Profile from './pages/profile.jsx';
 import ChangePassword from './auth/changePassword.jsx';
 import { PlatformProvider } from './pages/platformContext';
+import { PlatformProvider as PlatformContactProvider } from './pages/platformContact';
 
 function App() {
   return (
     <PlatformProvider>
-      <Router>
-        <Routes>
-          <Route path="/:business_slug?" element={<LandingPage />} />
-          <Route path="/customerservice/:business_slug" element={<CustomerService />} />
-          <Route path="/customerservices" element={<CustomerServices />} />
-          <Route path="/customerservice" element={<CustomerService />} />
-          <Route path="/paymentsystem" element={<BookingPayment />} />
-          <Route path="/adminDashboard/*" element={<AdminDashboard />} />
-          <Route path="/adminBooking/*" element={<AdminBooking />} />
-          <Route path="/aiconfiguration/*" element={<AdminConfiguration />} />
-          <Route path="/analytics/*" element={<Analytics />} />
-          <Route path="/settings/*" element={<Settings />} />
-          <Route path="/addbusiness/*" element={<AddBusiness />} />
-          <Route path="/adminlogin/*" element={<AdminLogin />} />
-          <Route path="/login/*" element={<Login />} />
-          <Route path="/forgot-password/*" element={<ForgotPassword />} />
-          <Route path="/reset-password/*" element={<ResetPassword />} />
-          <Route path="/profile/*" element={<Profile />} />
-          <Route path="/change-password/*" element={<ChangePassword />} />
-        </Routes>
-      </Router>
+      <PlatformContactProvider>
+        <Router>
+          <Routes>
+            <Route path="/:business_slug?" element={<LandingPage />} />
+            <Route path="/customerservice/:business_slug" element={<CustomerService />} />
+            <Route path="/customerservices" element={<CustomerServices />} />
+            <Route path="/customerservice" element={<CustomerService />} />
+            <Route path="/paymentsystem" element={<BookingPayment />} />
+            <Route path="/adminDashboard/*" element={<AdminDashboard />} />
+            <Route path="/adminBooking/*" element={<AdminBooking />} />
+            <Route path="/aiconfiguration/*" element={<AdminConfiguration />} />
+            <Route path="/analytics/*" element={<Analytics />} />
+            <Route path="/settings/*" element={<Settings />} />
+            <Route path="/addbusiness/*" element={<AddBusiness />} />
+            <Route path="/adminlogin/*" element={<AdminLogin />} />
+            <Route path="/login/*" element={<Login />} />
+            <Route path="/forgot-password/*" element={<ForgotPassword />} />
+            <Route path="/reset-password/*" element={<ResetPassword />} />
+            <Route path="/profile/*" element={<Profile />} />
+            <Route path="/change-password/*" element={<ChangePassword />} />
+          </Routes>
+        </Router>
+      </PlatformContactProvider>
     </PlatformProvider>
   );
 }
