@@ -55,6 +55,7 @@ const AddBusinessPage = () => {
   const [businessCards, setBusinessCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showAllCards, setShowAllCards] = useState(false);
 
   const [businessName, setBusinessName] = useState("");
   const [slug, setSlug] = useState("");
@@ -340,7 +341,7 @@ const AddBusinessPage = () => {
             {error && <p className="error-message">{error}</p>}
 
             <div className="business-cards-grid">
-              {businessCards.map((b) => (
+              {(showAllCards ? businessCards : businessCards.slice(0, 3)).map((b) => (
                 <div key={b.id} className="business-card">
                   <div className="business-card-head">
                     <div>
@@ -436,6 +437,16 @@ const AddBusinessPage = () => {
                 </div>
               ))}
             </div>
+            {businessCards.length > 3 && (
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <button
+                  className="card-btn"
+                  onClick={() => setShowAllCards((prev) => !prev)}
+                >
+                  {showAllCards ? "See Less ▲" : "See More (" + (businessCards.length - 3) + " more) ▼"}
+                </button>
+              </div>
+            )}
           </section>
 
           <section className="form-section">
@@ -490,6 +501,16 @@ const AddBusinessPage = () => {
                 </div>
               </form>
             </div>
+            {businessCards.length > 3 && (
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <button
+                  className="card-btn"
+                  onClick={() => setShowAllCards((prev) => !prev)}
+                >
+                  {showAllCards ? "See Less ▲" : "See More (" + (businessCards.length - 3) + " more) ▼"}
+                </button>
+              </div>
+            )}
           </section>
         </div>
       </main>
