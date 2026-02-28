@@ -471,7 +471,7 @@ const AddBusinessPage = () => {
                     <div style={{ display: "flex", gap: "0.5rem" }}>
                       <input type="text" value={otherService} onChange={(e) => setOtherService(e.target.value)} placeholder="Enter custom service type" />
                       <button type="button" onClick={handleAddCustomService} disabled={!otherService.trim()} style={{
-                        padding: '0.65rem 1rem',
+                        padding: '0.80rem 1rem',
                         border: 'none',
                         borderRadius: 'var(--radius-md)',
                         backgroundColor: otherService.trim() ? '#4CAF50' : '#ccc',
@@ -481,7 +481,8 @@ const AddBusinessPage = () => {
                         cursor: otherService.trim() ? 'pointer' : 'not-allowed',
                         transition: 'all var(--transition-base)',
                         whiteSpace: 'nowrap',
-                        height: '100%'
+                        height: '100%',
+                        marginTop: '0.5rem'
                       }}>Add Type</button>
                     </div>
                   </div>
