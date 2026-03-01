@@ -21,6 +21,7 @@ import insta from '../assets/insta.png';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import LandingHeader from '../components/LandingHeader';
 import Container from '../assets/Container.png';
+import { usePlatform as usePlatformContact } from './platformContact';
 
 // ── Axios instance ─────────────────────────────────────────────────────────
 const api = axios.create({
@@ -81,6 +82,9 @@ export default function ReservationCRM() {
   const [contactLoading, setContactLoading] = useState(false);
   const [contactSuccess, setContactSuccess] = useState('');
   const [contactError, setContactError] = useState('');
+
+  // Platform contact info from context
+  const { platformContact } = usePlatformContact();
 
   // Booking status checker
   const [statusEmail, setStatusEmail] = useState('');
@@ -389,18 +393,64 @@ export default function ReservationCRM() {
                     {bookings.map((booking, i) => (
                       <div key={booking.id ?? i} className="booking-item">
                         <div className="booking-item-left">
-                          <h4 className="booking-name">
-                            {booking.business_name ?? booking.businessName ?? booking.service ?? 'Booking'}
+                          <h4 className="booking-name" style={{ textAlign: 'left' }}>
+                            {booking.business_name ?? booking.businessName ?? booking.service_name ?? booking.service ?? 'Booking'}
+                            <span className={`booking-status-badge ${(booking.status ?? '').toLowerCase()}`}>
+                            {booking.status ?? 'Pending'}
+                            </span>
                           </h4>
-                          <p className="booking-meta">Date: {booking.date ?? booking.booking_date ?? 'N/A'}</p>
-                          <p className="booking-meta">Time: {booking.time ?? booking.booking_time ?? 'N/A'}</p>
-                          {(booking.guests ?? booking.guest_count) &&
-                            <p className="booking-meta">Guests: {booking.guests ?? booking.guest_count}</p>}
+                          
+
+                          {/* Date */}
+                          <p className="booking-meta" style={{ textAlign: 'left' }}>
+                            Booking Date:{' '}
+                            {(() => {
+                              const raw =
+                                booking.date ??
+                                booking.booking_date ??
+                                booking.bookingDate ??
+                                booking.scheduled_date ??
+                                booking.start_time ??       // sometimes date+time are combined
+                                booking.appointment_date ??
+                                null;
+                              if (!raw) return 'N/A';
+                              const d = new Date(raw);
+                              return isNaN(d)
+                                ? raw                        // show as-is if not parseable
+                                : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                            })()}
+                          </p>
+
+                          {/* Time */}
+                          <p className="booking-meta" style={{ textAlign: 'left' }}>
+                            Time:{' '}
+                            {(() => {
+                              const raw =
+                                booking.time ??
+                                booking.booking_time ??
+                                booking.bookingTime ??
+                                booking.start_time ??
+                                booking.appointment_time ??
+                                null;
+                              if (!raw) return 'N/A';
+                                const d = new Date(raw);
+                                return isNaN(d)
+                                  ? raw                        // show as-is (e.g. "14:30")
+                                  : d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                              })()}
+                            </p>
+
+                          {/* Guests (optional) */}
+                          {(booking.guests ?? booking.guest_count ?? booking.num_guests) != null && (
+                            <p className="booking-meta" style={{ textAlign: 'left' }}>
+                              Guests: {booking.guests ?? booking.guest_count ?? booking.num_guests}
+                            </p>
+                          )}
                         </div>
-                        <span className={`booking-status-badge ${(booking.status ?? '').toLowerCase()}`}>
-                          {booking.status ?? 'Pending'}
-                        </span>
-                        {/* <button className="btn-review" style={{background:'blue'}}>Review</button> */}
+
+                        
+
+                        <button className="btn-review" style={{ background: 'blue' }}>Review</button>
                       </div>
                     ))}
                   </div>
@@ -412,7 +462,7 @@ export default function ReservationCRM() {
       </section>
 
       {/* ── Contact ── */}
-      <section className="contact">
+      <section id="contact" className="contact">
         <div className="container">
           <h2 className="section-titles">Contact Us</h2>
 
@@ -420,9 +470,9 @@ export default function ReservationCRM() {
             {/* Info column */}
             <div className="contact-info">
               {[
-                { Icon: Phone, label: 'Phone', value: '+1 (555) 123-4567' },
-                { Icon: Mail, label: 'Email', value: 'support@reservenow.com' },
-                { Icon: MapPin, label: 'Address', value: '123 Business Ave, Suite 100\nNew York, NY 10001' },
+                { Icon: Phone, label: 'Phone', value: platformContact.contact_phone },
+                { Icon: Mail, label: 'Email', value: platformContact.contact_email },
+                { Icon: MapPin, label: 'Address', value: platformContact.contact_address },
               ].map(({ Icon, label, value }) => (
                 <div className="contact-item card" key={label}>
                   <div className="contact-icon"><Icon className="icon" /></div>

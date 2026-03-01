@@ -1019,7 +1019,7 @@
 
 @media (max-width: 1023px) {
     .add-business-content {
-        margin-left: 0;
+        margin-left: 70px;
         width: 100%;
         padding: 1.5rem;
     }

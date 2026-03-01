@@ -25,7 +25,7 @@ export const PlatformProvider = ({ children }) => {
   useEffect(() => {
     const fetchPlatformName = async () => {
       try {
-        const res = await api.get('/api/v1/admin/platform-name');
+        const res = await api.get('/api/v1/public/platform-name');
         const name =
           res.data?.platform_name ??
           res.data?.name ??

@@ -10,7 +10,7 @@ import market from '../assets/market.png';
 import sending from '../assets/sending.png';
 import axios from 'axios';
 import { Device } from '@twilio/voice-sdk';
-
+import VoiceCallModal from '../components/VoiceCallModal';
 // ── Axios instance ──────────────────────────────────────────────────────────
 const api = axios.create({
   baseURL: import.meta?.env?.VITE_API_BASE_URL || 'https://reservation-xynh.onrender.com',
@@ -114,7 +114,6 @@ function useTwilioVoice({ business_slug, selectedService, sessionId }) {
   const [isMuted,      setIsMuted]      = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [error,        setError]        = useState(null);
-
   // Clean up on unmount
   useEffect(() => () => {
     clearInterval(timerRef.current);
@@ -233,7 +232,7 @@ function useTwilioVoice({ business_slug, selectedService, sessionId }) {
 }
 
 // ── CallButton component ───────────────────────────────────────────────────
-function CallButton({ business_slug, selectedService, sessionId }) {
+function CallButton({ business_slug, selectedService, sessionId, setShowVoiceCall }) {
   const { callState, startCall, endCall, isMuted, toggleMute, callDuration, error } =
     useTwilioVoice({ business_slug, selectedService, sessionId });
 
@@ -298,25 +297,8 @@ function CallButton({ business_slug, selectedService, sessionId }) {
       )}
 
       {/* Main call button */}
-      <button
-        className="start-call-btn"
-        onClick={handleMainClick}
-        disabled={callState === CALL_STATE.ENDED}
-        style={{
-          display: 'flex', alignItems: 'center', gap: '6px',
-          background: bg, color: 'white', border: 'none',
-          borderRadius: '8px', padding: '8px 14px', fontWeight: '600',
-          fontSize: '0.875rem',
-          cursor: callState === CALL_STATE.ENDED ? 'default' : 'pointer',
-          opacity: callState === CALL_STATE.ENDED ? 0.7 : 1,
-          transition: 'background 0.2s',
-          minWidth: '120px', justifyContent: 'center',
-        }}
-      >
-        {icon === 'loading'   && <Loader   size={14} style={{ animation: 'spin 1s linear infinite' }} />}
-        {icon === 'phone'     && <Phone    size={14} />}
-        {icon === 'phone-off' && <PhoneOff size={14} />}
-        {label}
+      <button className="start-call-btn" onClick={() => {  if (!selectedService) { alert('Select a service first'); return; }  setShowVoiceCall(true);}}>
+        <Phone className="phone-icon" /> Start Call
       </button>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -348,6 +330,7 @@ export default function BookingAssistant() {
   const [paymentLink,       setPaymentLink]       = useState(null);
   const [paymentLoading,    setPaymentLoading]    = useState(false);
   const [detectedBookingId, setDetectedBookingId] = useState(null);
+  const [showVoiceCall, setShowVoiceCall] = useState(false);
 
   const chatEndRef = useRef(null);
 
@@ -538,7 +521,7 @@ export default function BookingAssistant() {
                 <div className="cart-icon"><img src={market} alt="market" /></div>
                 <div>
                   <h2 className="card-title" style={{ fontSize: '1.25rem' }}>
-                    {servicesLoading ? 'Loading...' : (business?.name || business_slug || 'Booking Inquiry')}
+                    {servicesLoading ? 'Loading...' : (business?.name || business?.business_name || 'Booking Inquiry')}
                   </h2>
                   <p className="card-subtitle">
                     {business?.service_type_name || 'Direct Reservation'}
@@ -660,6 +643,7 @@ export default function BookingAssistant() {
                     business_slug={business_slug}
                     selectedService={selectedService}
                     sessionId={sessionId}
+                    setShowVoiceCall={setShowVoiceCall}
                     disabled={!selectedService}
                   />
                 </div>
@@ -763,6 +747,19 @@ export default function BookingAssistant() {
 
         </div>
       </main>
+
+      {/* Voice Call Modal */}
+      {showVoiceCall && selectedService && (
+        <VoiceCallModal
+          businessSlug={business_slug}
+          serviceName={selectedService.title}
+          onClose={() => setShowVoiceCall(false)}
+          onHandoffToChat={({ conversationId }) => {
+            setShowVoiceCall(false);
+            if (conversationId) setConversationId(conversationId);
+          }}
+        />
+      )}
     </div>
   );
 }

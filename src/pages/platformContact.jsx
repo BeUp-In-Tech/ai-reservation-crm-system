@@ -14,38 +14,46 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-const PlatformContext = createContext({
-  platformContact: 'AI Reservation & CRM System',
+const DEFAULT_CONTACT = {
+  contact_phone: '+1 (555) 123-4567',
+  contact_email: 'support@reservenow.com',
+  contact_address: '123 Business Ave, Suite 100\nNew York, NY 10001',
+};
+
+const PlatformContactContext = createContext({
+  platformContact: DEFAULT_CONTACT,
   setPlatformContact: () => {},
+  refreshPlatformContact: () => {},
 });
 
-export const PlatformProvider = ({ children }) => {
-  const [platformContact, setPlatformContact] = useState('AI Reservation & CRM System');
+export const PlatformContactProvider = ({ children }) => {
+  const [platformContact, setPlatformContact] = useState(DEFAULT_CONTACT);
+
+  const fetchPlatformContact = async () => {
+    try {
+      const res = await api.get('/api/v1/public/platform-contact');
+      const data = res.data || {};
+      setPlatformContact({
+        contact_phone: data.contact_phone || DEFAULT_CONTACT.contact_phone,
+        contact_email: data.contact_email || DEFAULT_CONTACT.contact_email,
+        contact_address: data.contact_address || DEFAULT_CONTACT.contact_address,
+      });
+    } catch {
+      // Fall back to defaults silently
+    }
+  };
 
   useEffect(() => {
-    const fetchPlatformContact = async () => {
-      try {
-        const res = await api.get('/api/v1/admin/platform-contact');
-        const name =
-          res.data?.platform_contact ??
-          res.data?.platform_email ??
-          res.data?.platform_address ??
-          res.data?.data?.platform_contact;
-        if (name) setPlatformContact(name);
-      } catch {
-        // Silently fall back to default if fetch fails
-      }
-    };
     fetchPlatformContact();
   }, []);
 
   return (
-    <PlatformContext.Provider value={{ platformContact, setPlatformContact }}>
+    <PlatformContactContext.Provider value={{ platformContact, setPlatformContact, refreshPlatformContact: fetchPlatformContact }}>
       {children}
-    </PlatformContext.Provider>
+    </PlatformContactContext.Provider>
   );
 };
 
-export const usePlatform = () => useContext(PlatformContext);
+export const usePlatform = () => useContext(PlatformContactContext);
 
-export default PlatformContext;
+export default PlatformContactContext;

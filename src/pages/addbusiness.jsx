@@ -414,7 +414,7 @@ const AddBusinessPage = () => {
                       </div>
                     ) : (
                       <>
-                        <p className="business-card-desc">{b.description}</p>
+                        <p className="business-card-desc" style={{textAlign:'left'}}>{b.description}</p>
                         <div className="business-card-info">
                           <div className="info-row"><span className="info-label">Contact:</span><span className="info-value">{b.contact_fullname}</span></div>
                           <div className="info-row"><span className="info-label">Email:</span><span className="info-value">{b.contact_email}</span></div>
@@ -514,7 +514,7 @@ const AddBusinessPage = () => {
                 </div>
               </form>
             </div>
-            {businessCards.length > 3 && (
+            {/* {businessCards.length > 3 && (
               <div style={{ textAlign: "center", marginTop: "1rem" }}>
                 <button
                   className="card-btn"
@@ -523,7 +523,7 @@ const AddBusinessPage = () => {
                   {showAllCards ? "See Less ▲" : "See More (" + (businessCards.length - 3) + " more) ▼"}
                 </button>
               </div>
-            )}
+            )} */}
           </section>
         </div>
       </main>

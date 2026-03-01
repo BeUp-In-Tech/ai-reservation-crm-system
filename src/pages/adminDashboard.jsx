@@ -11,7 +11,8 @@ import {
   BarElement, ArcElement, Tooltip, Legend, Filler,
 } from 'chart.js';
 import Sidebar from '../components/Sidebar.jsx';
-import '../assets/styles/analytics.css';
+// import '../assets/styles/analytics.css';
+import '../assets/styles/adminDashboard.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
@@ -316,6 +317,15 @@ export default function Analytics() {
               type="text" placeholder="Search by name, phone, booking ID or status…"
               className="search-input" value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              style={{
+                padding: '0.625rem 1rem 0.625rem 2.75rem',
+                border: '1px solid #e5e7eb',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                outline: 'none',
+                backgroundColor: 'white',
+                transition: 'all 0.2s',
+              }}
             />
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>

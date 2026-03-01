@@ -377,6 +377,7 @@ body {
 .user-bubble {
   background-color: #2563eb;
   color: white;
+  display: inline-table;
 }
 
 .time-slots-container {
@@ -601,4 +602,14 @@ body {
   font-size: 0.7rem;
   color: #9ca3af;
   letter-spacing: 0.05em;
+}
+
+@media (max-width: 1440px) {
+  .chat-input-container {
+    max-width: 100%;
+  }
+
+  .chat-container {
+    min-width: 100%;
+  }
 }

@@ -29,36 +29,45 @@ const AdminProfileDashboard = () => {
   const navigate = useNavigate();
 
   const { platformName, setPlatformName } = usePlatform();
-  const { platformContact, setPlatformContact } = usePlatformContact();
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(false);
   const [whatsapp, setWhatsapp] = useState(false);
+  // At the top, update the import to get refreshPlatformContact too
+  const { platformContact: ctxContact, setPlatformContact, refreshPlatformContact } = usePlatformContact();
 
+  // Update initial profile state to use context values
   const [profile, setProfile] = useState({
-    phone: platformContact,
-    email: platformContact,
-    address: platformContact,
+    phone: ctxContact.contact_phone,
+    email: ctxContact.contact_email,
+    address: ctxContact.contact_address,
     company: platformName,
-    timezone: "Eastern Time (ET)",
+    timezone: 'Eastern Time (ET)',
   });
-  
+
+  // Replace handlePlatformContactsave with this:
   const handlePlatformContactsave = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.put("/api/v1/admin/platform-contact", {
+      await api.put('/api/v1/admin/platform-contact', {
         contact_phone: profile.phone,
-        contact_email: profile.email,
-        contact_address: profile.address,
-        updated_at: new Date().toISOString()
-      });
-      console.log("Platform contact updated successfully:", response.data);
-      alert("Platform contact updated successfully!");
+      contact_email: profile.email,
+      contact_address: profile.address,
+      updated_at: new Date().toISOString(),
+    });
+    // Update context immediately so landing page reflects change
+    setPlatformContact({
+      contact_phone: profile.phone,
+      contact_email: profile.email,
+      contact_address: profile.address,
+    });
+      // Also re-fetch from server to confirm
+    await refreshPlatformContact();
+    alert('Platform contact updated successfully!');
     } catch (err) {
-      const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? "Failed to update platform contact. Please try again.";
-      console.error("Error updating platform contact:", err);
+      const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? 'Failed to update platform contact. Please try again.';
       alert(msg);
     }
-  }; 
+  };
 
   
   const [platformNameInput, setPlatformNameInput] = useState(platformName);
@@ -136,7 +145,7 @@ const AdminProfileDashboard = () => {
               <div className="profile-header">
                 <div className="avatar">{profile.name?.[0]?.toUpperCase() || "A"}</div>
                 <div className="profile-meta">
-                  <h2 className="profile-name">{profile.name}</h2>
+                  <h2 className="profile-name">Admin</h2>
                   <p className="profile-role">{platformName}</p>
                   <div className="profile-badges" />
                 </div>
@@ -243,8 +252,9 @@ const AdminProfileDashboard = () => {
                 border: '1px solid #ddd',
                 backgroundColor: 'white',
                 cursor: 'text',
+                color: 'black'
               }}
-            />
+              />
 
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'black' }}>Email</label>
             <input
@@ -260,7 +270,9 @@ const AdminProfileDashboard = () => {
                 border: '1px solid #ddd',
                 backgroundColor: 'white',
                 cursor: 'text',
+                color: 'black'
               }}
+              placeholder="Enter your email"
             />
 
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'black' }}>Address</label>
@@ -277,7 +289,9 @@ const AdminProfileDashboard = () => {
                 border: '1px solid #ddd',
                 backgroundColor: 'white',
                 cursor: 'text',
+                color: 'black'
               }}
+              placeholder="Enter your address"
             />
 
             <button

@@ -68,6 +68,11 @@ export default function AIConfiguration() {
     mentionPromotions: false,
   });
 
+  // allow_multiple_bookings is its own top-level field — kept separate from permissions
+  const [allowMultipleBookings, setAllowMultipleBookings] = useState(false);
+  const [multipleBookingsLoading, setMultipleBookingsLoading] = useState(false);
+  const [multipleBookingsError, setMultipleBookingsError] = useState(null);
+
   const [businesses, setBusinesses] = useState([]);
   const [selectedBusinessId, setSelectedBusinessId] = useState('');
   const [configuredBusinesses, setConfiguredBusinesses] = useState(new Set());
@@ -99,6 +104,8 @@ export default function AIConfiguration() {
     setPrice(svc.price || svc.base_price || '');
     if (Array.isArray(svc.prompts)) setSavedPrompts(svc.prompts);
     if (svc.permissions) setPermissions((p) => ({ ...p, ...svc.permissions }));
+    // Read allow_multiple_bookings directly from the top-level service field
+    setAllowMultipleBookings(svc.allow_multiple_bookings === true);
   }, []);
 
   const fetchBusinesses = useCallback(async () => {
@@ -173,6 +180,8 @@ export default function AIConfiguration() {
     setSavedPrompts([]);
     setPrompt('');
     setPermissions({ cancelBookings: false, rescheduleBookings: true, mentionPromotions: false });
+    setAllowMultipleBookings(false);
+    setMultipleBookingsError(null);
     setIsServiceLoaded(false);
   };
 
@@ -185,6 +194,31 @@ export default function AIConfiguration() {
 
   const removePrompt = (p) => setSavedPrompts((prev) => prev.filter((x) => x !== p));
   const handlePermissionToggle = (key) => setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  // ── Toggle allow_multiple_bookings — immediately PATCHes the backend ──────
+  const handleMultipleBookingsToggle = async () => {
+    if (!selectedBusinessId || !selectedService) return;
+
+    const newValue = !allowMultipleBookings;
+
+    // Optimistic UI update
+    setAllowMultipleBookings(newValue);
+    setMultipleBookingsLoading(true);
+    setMultipleBookingsError(null);
+
+    try {
+      await api.patch(
+        `/api/v1/admin/businesses/${selectedBusinessId}/services/${selectedService}`,
+        { allow_multiple_bookings: newValue }
+      );
+    } catch (err) {
+      // Revert on failure
+      setAllowMultipleBookings(!newValue);
+      setMultipleBookingsError(httpErrorMsg(err));
+    } finally {
+      setMultipleBookingsLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!selectedBusinessId || !selectedService) {
@@ -284,7 +318,16 @@ export default function AIConfiguration() {
                     Active AI Profile: {lastSavedConfig.serviceName}
                   </p>
                 </div>
-                <button className="banner-close" onClick={() => { setLastSavedConfig(null); try { localStorage.removeItem('lastSavedConfig'); } catch { /* non-critical */ } }} style={{ color: '#9ca3af', padding: '0.5rem' }}>&times;</button>
+                <button
+                  className="banner-close"
+                  onClick={() => {
+                    setLastSavedConfig(null);
+                    try { localStorage.removeItem('lastSavedConfig'); } catch { /* non-critical */ }
+                  }}
+                  style={{ color: '#9ca3af', padding: '0.5rem' }}
+                >
+                  &times;
+                </button>
               </div>
               <div className="business-card-content">
                 <div className="business-card-info">
@@ -310,11 +353,19 @@ export default function AIConfiguration() {
             </button>
           </div>
           {bizError && <div className="field-error-box" style={{ marginBottom: '1.5rem' }}><AlertCircle size={14} /><span>{bizError}</span></div>}
-          {bizLoading && <div className="service-cards-grid">{[1,2,3].map((i) => <div key={i} className="service-card service-card--skeleton"><div className="skel skel-svc-name" /></div>)}</div>}
+          {bizLoading && (
+            <div className="service-cards-grid">
+              {[1, 2, 3].map((i) => <div key={i} className="service-card service-card--skeleton"><div className="skel skel-svc-name" /></div>)}
+            </div>
+          )}
           {!bizLoading && businesses.length > 0 && (
             <div className="service-cards-grid">
               {businesses.map((b) => (
-                <div key={b.id} className={`service-card ${selectedBusinessId === b.id ? 'service-card--selected' : ''}`} onClick={() => setSelectedBusinessId(b.id)}>
+                <div
+                  key={b.id}
+                  className={`service-card ${selectedBusinessId === b.id ? 'service-card--selected' : ''}`}
+                  onClick={() => setSelectedBusinessId(b.id)}
+                >
                   {selectedBusinessId === b.id && <span className="service-card-check"><CheckCircle size={18} /></span>}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingRight: '22px' }}>
                     <h3 className="service-card-name" style={{ margin: 0 }}>{b.name}</h3>
@@ -337,26 +388,53 @@ export default function AIConfiguration() {
                 <div className="section-label-row">
                   <h2 className="select-services-title">
                     Select Service
-                    {selectedService && <span className="svc-selected-badge">✓ {services.find((s) => s.id === selectedService)?.name}</span>}
+                    {selectedService && (
+                      <span className="svc-selected-badge">✓ {services.find((s) => s.id === selectedService)?.name}</span>
+                    )}
                   </h2>
-                  <button className="icon-retry-btn" onClick={() => fetchServices(selectedBusinessId)} disabled={svcLoading} title="Refresh services" style={{ backgroundColor: 'transparent', color: 'gray' }}>
+                  <button
+                    className="icon-retry-btn"
+                    onClick={() => fetchServices(selectedBusinessId)}
+                    disabled={svcLoading}
+                    title="Refresh services"
+                    style={{ backgroundColor: 'transparent', color: 'gray' }}
+                  >
                     <RefreshCw size={14} className={svcLoading ? 'spinning-icon' : ''} />
                   </button>
                 </div>
-                {svcError && <div className="field-error-box"><AlertCircle size={13} /><span>{svcError}</span></div>}
-                {svcLoading && <div className="service-cards-grid">{[1,2,3].map((i) => <div key={i} className="service-card service-card--skeleton"><div className="skel skel-svc-name" /></div>)}</div>}
+
+                {svcError && (
+                  <div className="field-error-box"><AlertCircle size={13} /><span>{svcError}</span></div>
+                )}
+
+                {svcLoading && (
+                  <div className="service-cards-grid">
+                    {[1, 2, 3].map((i) => <div key={i} className="service-card service-card--skeleton"><div className="skel skel-svc-name" /></div>)}
+                  </div>
+                )}
+
                 {!svcLoading && services.length > 0 && (
                   <div className="service-cards-grid">
                     {services.map((s) => (
-                      <div key={s.id} className={`service-card ${selectedService === s.id ? 'service-card--selected' : ''}`} onClick={() => setSelectedService((prev) => (prev === s.id ? '' : s.id))} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setSelectedService((prev) => (prev === s.id ? '' : s.id))}>
+                      <div
+                        key={s.id}
+                        className={`service-card ${selectedService === s.id ? 'service-card--selected' : ''}`}
+                        onClick={() => setSelectedService((prev) => (prev === s.id ? '' : s.id))}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && setSelectedService((prev) => (prev === s.id ? '' : s.id))}
+                      >
                         <span className="service-card-check">{selectedService === s.id ? '✓' : ''}</span>
                         <span className="service-card-name">{s.name}</span>
                       </div>
                     ))}
                   </div>
                 )}
+
                 {!svcLoading && services.length === 0 && !svcError && (
-                  <p className="svc-empty-text">No services found. Add services in the <a href="/addBusiness" className="svc-link">Add Business</a> page.</p>
+                  <p className="svc-empty-text">
+                    No services found. Add services in the <a href="/addBusiness" className="svc-link">Add Business</a> page.
+                  </p>
                 )}
               </div>
 
@@ -364,34 +442,66 @@ export default function AIConfiguration() {
                 <div className="ai-config-prompt-content">
                   <h2 className="ai-config-prompt-title">Prompt</h2>
                   <div className="ai-config-prompt-input">
-                    <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Enter a prompt instruction and click Add Prompt…" onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) addPrompt(); }} />
+                    <textarea
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Enter a prompt instruction and click Add Prompt…"
+                      onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) addPrompt(); }}
+                    />
                   </div>
                   <p className="prompt-hint">Ctrl + Enter to add quickly</p>
-                  <button className="ai-config-save-btn" style={{ marginTop: '0.75rem' }} onClick={addPrompt} disabled={!prompt.trim()}>Add Prompt</button>
+                  <button
+                    className="ai-config-save-btn"
+                    style={{ marginTop: '0.75rem' }}
+                    onClick={addPrompt}
+                    disabled={!prompt.trim()}
+                  >
+                    Add Prompt
+                  </button>
                 </div>
                 {savedPrompts.length > 0 && (
                   <div className="saved-prompts editable">
                     {savedPrompts.map((p, i) => (
-                      <button key={i} type="button" className="chip chip-removable" onClick={() => removePrompt(p)} title="Remove">{p} ✕</button>
+                      <button key={i} type="button" className="chip chip-removable" onClick={() => removePrompt(p)} title="Remove">
+                        {p} ✕
+                      </button>
                     ))}
                   </div>
                 )}
               </div>
 
               <h2 className="ai-config-section-titleB">Business Hours</h2>
-              <div className="form-group"><label>Timezone *</label><select value={timezone} onChange={(e) => setTimezone(e.target.value)}>{TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}</select></div>
-              <div className="form-group"><label>Opening Time *</label><input type="time" value={openingTime} onChange={(e) => setOpeningTime(e.target.value)} /></div>
-              <div className="form-group"><label>Closing Time *</label><input type="time" value={closingTime} onChange={(e) => setClosingTime(e.target.value)} /></div>
+              <div className="form-group">
+                <label>Timezone *</label>
+                <select value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+                  {TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Opening Time *</label>
+                <input type="time" value={openingTime} onChange={(e) => setOpeningTime(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Closing Time *</label>
+                <input type="time" value={closingTime} onChange={(e) => setClosingTime(e.target.value)} />
+              </div>
 
               <h2 className="ai-config-section-title">Price</h2>
-              <div className="form-group"><label>Price *</label><input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="$USD" /></div>
+              <div className="form-group">
+                <label>Price *</label>
+                <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="$USD" />
+              </div>
             </section>
 
             <section className="ai-config-section">
               <h2 className="ai-config-section-title">Select Voice</h2>
               <div className="voice-grid">
                 {VOICES.map((voice) => (
-                  <div key={voice.name} className={`voice-card ${selectedVoice === voice.name ? 'selected' : ''}`} onClick={() => setSelectedVoice(voice.name)}>
+                  <div
+                    key={voice.name}
+                    className={`voice-card ${selectedVoice === voice.name ? 'selected' : ''}`}
+                    onClick={() => setSelectedVoice(voice.name)}
+                  >
                     <div className="voice-card-content">
                       <h3 className="voice-name">{voice.name}</h3>
                       <div className="voice-details">
@@ -399,7 +509,9 @@ export default function AIConfiguration() {
                         <span className="voice-detail-separator">•</span>
                         <span className="voice-detail">{voice.accent}</span>
                       </div>
-                      <button className="voice-preview-btn" onClick={(e) => e.stopPropagation()}><Play size={14} className="voice-preview-icon" />Preview</button>
+                      <button className="voice-preview-btn" onClick={(e) => e.stopPropagation()}>
+                        <Play size={14} className="voice-preview-icon" />Preview
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -409,15 +521,88 @@ export default function AIConfiguration() {
             <section className="ai-config-section">
               <h2 className="ai-config-section-title">Permissions</h2>
               <div className="permissions-list">
+
+                {/* Standard permission toggles */}
                 {[
-                  { key: 'cancelBookings', title: 'Cancel Bookings', desc: 'AI can process cancellations' },
+                  { key: 'cancelBookings',     title: 'Cancel Bookings',     desc: 'AI can process cancellations' },
                   { key: 'rescheduleBookings', title: 'Reschedule Bookings', desc: 'AI can move appointments' },
                 ].map(({ key, title, desc }) => (
                   <div className="permission-item" key={key}>
-                    <div className="permission-info"><h3 className="permission-title">{title}</h3><p className="permission-description">{desc}</p></div>
-                    <label className="toggle-switch"><input type="checkbox" checked={permissions[key]} onChange={() => handlePermissionToggle(key)} /><span className="toggle-slider" /></label>
+                    <div className="permission-info">
+                      <h3 className="permission-title">{title}</h3>
+                      <p className="permission-description">{desc}</p>
+                    </div>
+                    <label className="toggle-switch">
+                      <input type="checkbox" checked={permissions[key]} onChange={() => handlePermissionToggle(key)} />
+                      <span className="toggle-slider" />
+                    </label>
                   </div>
                 ))}
+
+                {/* ── Allow Multiple Bookings — PATCHes immediately on click ── */}
+                <div className="permission-item">
+                  <div className="permission-info">
+                    <h3 className="permission-title">Allow Multiple Bookings</h3>
+                    <p className="permission-description">Multiple users can book the same slot</p>
+                    {multipleBookingsError && (
+                      <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px' }}>
+                        {multipleBookingsError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Pill toggle — blue = true, grey = false */}
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={allowMultipleBookings}
+                    onClick={handleMultipleBookingsToggle}
+                    disabled={multipleBookingsLoading || !selectedService}
+                    title={!selectedService ? 'Select a service first' : undefined}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      width: '48px',
+                      height: '26px',
+                      borderRadius: '9999px',
+                      border: 'none',
+                      cursor: (!selectedService || multipleBookingsLoading) ? 'not-allowed' : 'pointer',
+                      padding: '3px',
+                      transition: 'background-color 0.25s ease',
+                      backgroundColor: allowMultipleBookings ? '#3b82f6' : '#d1d5db',
+                      opacity: (!selectedService || multipleBookingsLoading) ? 0.6 : 1,
+                      flexShrink: 0,
+                      position: 'relative',
+                    }}
+                  >
+                    {/* Spinning loader overlaid when saving */}
+                    {multipleBookingsLoading && (
+                      <span style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <Loader size={14} className="spinning-icon" style={{ color: '#fff' }} />
+                      </span>
+                    )}
+                    <span
+                      style={{
+                        display: 'block',
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        backgroundColor: '#ffffff',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                        transition: 'transform 0.25s ease',
+                        transform: allowMultipleBookings ? 'translateX(22px)' : 'translateX(0px)',
+                        opacity: multipleBookingsLoading ? 0 : 1,
+                      }}
+                    />
+                  </button>
+                </div>
+
               </div>
             </section>
           </>

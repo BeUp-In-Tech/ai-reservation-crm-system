@@ -686,7 +686,7 @@ hr {
 p {
   text-align: center;
   margin-bottom: 1rem;
-  color: #111827;
+  /* color: #111827; */
 }
 
 .features-grid {
@@ -1573,6 +1573,7 @@ p {
 
   .hero-content {
     padding-right: 1rem;
+    margin-left: 3rem;
   }
 
   .chat-container {
@@ -1733,4 +1734,488 @@ p {
 .booking-status-badge.cancelled {
   background-color: #fee2e2;
   color: #991b1b;
+}
+
+/* Multiple Bookings Toggle */
+.ai-config-multiple-bookings {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 24px;
+  margin-right: 12px;
+  transition: background 0.3s ease;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-slider {
+  background: #3b82f6;
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-slider::before {
+  transform: translateX(24px);
+}
+
+.toggle-text {
+  font-weight: 500;
+}
+
+/* ── Responsive Media Queries ────────────────────────────────────────────────── */
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .ai-config-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  
+  .ai-config-main-content {
+    padding: 2rem 3rem;
+  }
+  
+  .service-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .voice-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .permissions-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Laptop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .ai-config-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .ai-config-main-content {
+    padding: 1.5rem 2rem;
+  }
+  
+  .service-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .voice-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .ai-config-section {
+    margin-bottom: 2rem;
+  }
+  
+  .ai-config-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ai-config-container {
+    padding: 1rem;
+  }
+  
+  .ai-config-main-content {
+    padding: 1rem 1.5rem;
+  }
+  
+  .ai-config-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .ai-config-header button {
+    align-self: flex-end;
+  }
+  
+  .service-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  
+  .voice-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  
+  .permissions-list {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .permission-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .ai-config-multiple-bookings {
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+  }
+  
+  .toggle-label {
+    font-size: 0.85rem;
+  }
+  
+  .toggle-slider {
+    width: 44px;
+    height: 22px;
+  }
+  
+  .toggle-slider::before {
+    width: 18px;
+    height: 18px;
+    top: 2px;
+    left: 2px;
+  }
+  
+  .toggle-label input[type="checkbox"]:checked + .toggle-slider::before {
+    transform: translateX(22px);
+  }
+}
+
+/* Mobile Landscape (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .ai-config-container {
+    padding: 0.75rem;
+  }
+  
+  .ai-config-main-content {
+    padding: 0.75rem 1rem;
+  }
+  
+  .ai-config-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .ai-config-page-title {
+    font-size: 1.5rem;
+  }
+  
+  .ai-config-page-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .service-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .voice-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .voice-card {
+    padding: 1rem;
+  }
+  
+  .voice-name {
+    font-size: 0.9rem;
+  }
+  
+  .voice-detail {
+    font-size: 0.8rem;
+  }
+  
+  .permissions-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .permission-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .permission-title {
+    font-size: 0.9rem;
+  }
+  
+  .permission-description {
+    font-size: 0.8rem;
+  }
+  
+  .ai-config-multiple-bookings {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .toggle-label {
+    font-size: 0.8rem;
+  }
+  
+  .toggle-slider {
+    width: 40px;
+    height: 20px;
+  }
+  
+  .toggle-slider::before {
+    width: 16px;
+    height: 16px;
+    top: 2px;
+    left: 2px;
+  }
+  
+  .toggle-label input[type="checkbox"]:checked + .toggle-slider::before {
+    transform: translateX(20px);
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    font-size: 0.85rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Mobile Portrait (320px - 479px) */
+@media (max-width: 479px) {
+  .ai-config-container {
+    padding: 0.5rem;
+  }
+  
+  .ai-config-main-content {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .ai-config-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .ai-config-page-title {
+    font-size: 1.25rem;
+  }
+  
+  .ai-config-page-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .ai-config-header button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .service-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .service-card {
+    padding: 0.75rem;
+  }
+  
+  .service-card-name {
+    font-size: 0.85rem;
+  }
+  
+  .voice-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .voice-card {
+    padding: 0.75rem;
+    text-align: center;
+  }
+  
+  .voice-name {
+    font-size: 0.85rem;
+  }
+  
+  .voice-detail {
+    font-size: 0.75rem;
+  }
+  
+  .voice-preview-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .permissions-list {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .permission-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .permission-title {
+    font-size: 0.85rem;
+  }
+  
+  .permission-description {
+    font-size: 0.75rem;
+  }
+  
+  .ai-config-multiple-bookings {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .toggle-label {
+    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .toggle-slider {
+    width: 36px;
+    height: 18px;
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+  
+  .toggle-slider::before {
+    width: 14px;
+    height: 14px;
+    top: 2px;
+    left: 2px;
+  }
+  
+  .toggle-label input[type="checkbox"]:checked + .toggle-slider::before {
+    transform: translateX(18px);
+  }
+  
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+  
+  .form-group label {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+  
+  .ai-config-prompt-input textarea {
+    min-height: 80px;
+  }
+  
+  .ai-config-save-btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-primary1 {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .chip {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Smooth transitions for all screen sizes */
+.ai-config-container,
+.ai-config-main-content,
+.ai-config-section,
+.service-cards-grid,
+.voice-grid,
+.permissions-list,
+.permission-item,
+.service-card,
+.voice-card,
+.toggle-slider,
+.toggle-slider::before {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent layout shifts during loading */
+.service-cards-grid,
+.voice-grid {
+  min-height: 200px;
+}
+
+/* Ensure readability on all devices */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+@media (min-width: 769px) {
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
 }

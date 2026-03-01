@@ -115,68 +115,115 @@
 
   .landing-header-content {
     padding: 1.5rem;
-    flex-wrap: wrap;
-    /* Allow wrapping */
+    flex-wrap: wrap; /* Allow wrapping */
+    flex-direction: row; /* Keep items in a row on wider screens */
+    justify-content: space-between; /* Ensure items are spread across */
+    gap: 1rem; /* Add gap between elements */
+    font-size: 0.8rem;
   }
 
-  /* On tablets, we might want to keep the nav visible or collapse it. 
-     Current design stacks everything. Let's refine based on the original intent but cleaner. */
-
-  .landing-header-content {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
+  /* Align nav links and buttons properly */
   .landing-nav-links {
-    gap: 1.5rem;
-    width: 100%;
-    justify-content: center;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start; /* Align the nav items to the left */
+    width: auto;
   }
 
+  /* Button container */
   .landing-buttons {
-    width: 100%;
-    justify-content: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end; /* Align the buttons to the right */
+    width: auto;
+  }
+
+  .landing-header-content .landing-nav-links a {
+    margin-right: 1rem; /* Space between navigation links */
+  }
+
+  .landing-buttons a {
+    margin-right: 1rem; /* Space between buttons */
   }
 }
-
 /* For mobile devices */
-@media (max-width: 768px) {
+/* For mobile and tablet devices (max-width: 768px) */
+@media (max-width: 767px) {
 
+  /* Adjust the header content for smaller screens */
   .landing-header-content {
     padding: 1rem;
-    flex-direction: column;
+    flex-direction: column; /* Stack elements vertically */
     align-items: center;
+    gap: 1.5rem; /* Add space between elements */
   }
 
+  /* Adjust the logo image size */
   .landing-logo-img {
     height: 35px;
+    width: auto;
   }
 
+  /* Title font size and text alignment */
   .landing-header-title {
     font-size: 1.1rem;
     text-align: center;
+    color: #0e0f11; /* Ensuring the color remains visible */
   }
 
+  /* Stack the navigation links vertically */
   .landing-nav-links {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem; /* Increased space between links */
     text-align: center;
     width: 100%;
   }
 
+  /* Style for navigation links */
+  .landing-nav-links a {
+    font-size: 1rem; /* Adjust font size for readability */
+    color: #6f7680;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s ease;
+    margin-right: 0; /* Remove right margin */
+  }
+
+  /* Button container styling */
   .landing-buttons {
     flex-direction: column;
     width: 100%;
-    /* gap: 0rem; */
+    gap: 1rem; /* Add gap between the buttons */
   }
 
+  /* Make the admin and primary buttons full-width */
   .landing-btn-admin,
   .landing-btn-primary {
     width: 100%;
-    margin: 0;
+    padding: 0.75rem 1.5rem; /* Make buttons more touch-friendly */
+    font-size: 1rem; /* Adjust button font size */
+    text-align: center;
+  }
+
+  /* Admin button hover effect */
+  .landing-btn-admin:hover {
+    background-color: #f9fafb;
+  }
+
+  /* Primary button hover effect */
+  .landing-btn-primary:hover {
+    background-color: #1d4ed8;
+  }
+
+  /* Button focus and active state */
+  .landing-btn-admin:focus,
+  .landing-btn-admin:active,
+  .landing-btn-primary:focus,
+  .landing-btn-primary:active {
+    outline: none;
+    box-shadow: none;
   }
 }
-
 /* ===== Laptop (1024px – 1280px) ===== */
 @media (max-width: 1023px) {
   .landing-buttons {

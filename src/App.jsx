@@ -16,7 +16,7 @@ import ResetPassword from './auth/resetPassword.jsx';
 import Profile from './pages/profile.jsx';
 import ChangePassword from './auth/changePassword.jsx';
 import { PlatformProvider } from './pages/platformContext';
-import { PlatformProvider as PlatformContactProvider } from './pages/platformContact';
+import { PlatformContactProvider } from './pages/platformContact';
 
 function App() {
   return (

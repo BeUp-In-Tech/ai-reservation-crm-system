@@ -664,6 +664,9 @@ body {
     flex-direction: row;
     justify-content: space-between;
   }
+  .search-input {
+    min-width: 50%;
+  }
 }
 
 .footer-text {
